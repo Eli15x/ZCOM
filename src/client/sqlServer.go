@@ -39,9 +39,8 @@ func (c *clientSql) Connect() error {
 	
 	u := &url.URL{
 		Scheme:   "sqlserver",
-		User:     url.UserPassword(username, password),
-		Host:     fmt.Sprintf("%s:%d", hostname, port),
-		// Path:  instance, // if connecting to an instance instead of a port
+		User:     url.UserPassword(os.getEnv(UsernameDB), os.getEnv(PasswordDB)),
+		Host:     fmt.Sprintf("%s:%d", os.getEnv(HostnameDB), os.getEnv(port)),
 		RawQuery: query.Encode(),
 	}
 	db, err := sql.Open("sqlserver", u.String())
@@ -52,7 +51,7 @@ func (c *clientSql) Connect() error {
 	return nil
 }
 
-func (c *clientSql) DeleteParameter(commandSql string, interfaceSql interface{}) error {
+/*func (c *clientSql) DeleteParameter(commandSql string, interfaceSql interface{}) error {
 	_, err := c.db.Exec(commandSql, interfaceSql)
 	if err != nil {
 		return err
@@ -96,4 +95,4 @@ func (c *clientSql) Insert(TableName string, interfaceSql interface{}, interface
 	tin, err := time.Parse(time.RFC3339, "2006-01-02T22:04:05.7870015-07:00")   // data containing 7 decimal digits and has time zone awareness
 	param := mssql.DateTime1(tin)   // data is stored in mssql.DateTime1 type
 	_, err = stmt.Exec(TableName)
-}
+}*/

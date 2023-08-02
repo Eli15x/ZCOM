@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Eli15x/SagwaBooks-Back/src/client"
-	"github.com/Eli15x/SagwaBooks-Back/src/handlers"
+	"github.com/Eli15x/ZCOM/src/client"
+	"github.com/Eli15x/ZCOM/src/handler"
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -47,7 +47,7 @@ func main() {
 
 	router.Use(cors.New(config))
 
-	router.POST("/login", handlers.ValidateUser)
+	/*router.POST("/login", handlers.ValidateUser)
 	router.POST("/cadastro", handlers.CreateUser)
 	router.POST("/user/edit", handlers.EditUser)
 	router.POST("/user/delete", handlers.DeleteUser)
@@ -64,8 +64,8 @@ func main() {
 	router.POST("/product/edit", handlers.EditWriter)
 	router.DELETE("/product/delete", handlers.DeleteWriter)
 	
-	router.POST("/sale/send", handlers.CreateBook)
-	router.POST("/sales/send", handlers.CreateBook)
+	//router.POST("/sale/send", handlers.CreateBook)
+	//.POST("/sales/send", handlers.CreateBook)*/
 
 
 	router.Run(":1323")

@@ -6,7 +6,6 @@ import (
 
 	"net/http"
 
-	"github.com/Eli15x/ZCOM/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 )
@@ -33,11 +32,11 @@ func ValidateUser(c *gin.Context) {
 		return
 	}
 
-	resultUser, err := service.GetInstanceUser().ValidateUser(context.Background(), email, password)
+	/*resultUser, err := service.GetInstanceUser().ValidateUser(context.Background(), email, password)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	c.JSON(http.StatusOK, &resultUser)
 }
@@ -73,11 +72,11 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	userId, err := service.GetInstanceUser().CreateNewUser(context.Background(), name, email, password, telefone)
+	/*userId, err := service.GetInstanceUser().CreateNewUser(context.Background(), name, email, password, telefone)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	c.String(http.StatusOK, userId)
 }
@@ -123,11 +122,11 @@ func EditUser(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceUser().EditUser(context.Background(), userId, name, email, password, telefone)
+	/*err = service.GetInstanceUser().EditUser(context.Background(), userId, name, email, password, telefone)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	c.String(http.StatusOK, "")
 }
@@ -149,11 +148,11 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceUser().DeleteUser(context.Background(), userId)
+	/*err = service.GetInstanceUser().DeleteUser(context.Background(), userId)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	c.String(http.StatusOK, "")
 }
@@ -170,11 +169,11 @@ func GetInformationByUserId(c *gin.Context) {
 
 	userId := json_map["userId"].(string) //está dando erro quando tenta pegar o "email" e ele não existe.
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
+	/*result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	log.Infof("[GetInformation] Object : %s \n", result, "")
 
@@ -194,11 +193,11 @@ func GetUserByName(c *gin.Context) {
 
 	userId := json_map["userId"].(string) //está dando erro quando tenta pegar o "email" e ele não existe.
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
+	/*result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	log.Infof("[GetInformation] Object : %s \n", result, "")
 
@@ -217,11 +216,11 @@ func GetUserByFunction(c *gin.Context) {
 
 	userId := json_map["userId"].(string) //está dando erro quando tenta pegar o "email" e ele não existe.
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
+	/*result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	log.Infof("[GetInformation] Object : %s \n", result, "")
 
@@ -240,11 +239,11 @@ func GetUserByAcess(c *gin.Context) {
 
 	userId := json_map["userId"].(string) //está dando erro quando tenta pegar o "email" e ele não existe.
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
+	/*result, err := service.GetInstanceUser().GetInformationUser(context.Background(), userId)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}
+	}*/
 
 	log.Infof("[GetInformation] Object : %s \n", result, "")
 

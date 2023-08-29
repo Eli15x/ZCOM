@@ -1,8 +1,4 @@
-package models
-
-import (
-	"time"
-)
+package model
 
 type user struct {
 	UserId             string    `json:"userId,omitempty" bson:"userId,omitempty"`

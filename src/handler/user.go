@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"net/http"
-
+	"github.com/Eli15x/ZCOM/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 )
@@ -32,18 +32,18 @@ func ValidateUser(c *gin.Context) {
 		return
 	}
 
-	/*resultUser, err := service.GetInstanceUser().ValidateUser(context.Background(), email, password)
+	resultUser, err := service.GetInstanceUser().ValidateUser(context.Background(), email, password)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}*/
+	}
 
 	c.JSON(http.StatusOK, &resultUser)
 }
 
 func CreateUser(c *gin.Context) {
 
-	json_map := make(map[string]interface{})
+	var user models.userRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&json_map)
 
 	if err != nil {
@@ -71,12 +71,12 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if idAcess == "" {
-		c.String(400, "Create User Error: password not find")
+	if idAcess == 0 {
+		c.String(400, "Create User Error: idAcess not find")
 		return
 	}
 
-	userId, err := service.GetInstanceUser().CreateNewUser(context.Background(), name, email, password, idAcess)
+	userId, err := service.GetInstanceUser().CreateUser(context.Background(), name, email, password, idAcess)
 	if err != nil {
 		c.String(400, err.Error())
 		return

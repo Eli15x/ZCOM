@@ -4,6 +4,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -54,14 +55,14 @@ func (m *mongodbImpl) Initialize(ctx context.Context) error {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
 
 	clientOptions := options.Client().
-		ApplyURI(os.GetEnv(DB)).SetServerAPIOptions(serverAPIOptions)
+		ApplyURI(os.Getenv("DB")).SetServerAPIOptions(serverAPIOptions)
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	m.dbName = os.GetEnv(DbName)
+	m.dbName = os.Getenv("DBName")
 	m.client = client
 	return nil
 }

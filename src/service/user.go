@@ -7,20 +7,21 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Eli15x/ZCOM/src/models"
+	"github.com/Eli15x/ZCOM/src/model"
 	"github.com/Eli15x/ZCOM/src/client"
-	"github.com/Eli15x/ZCOM/utils"
+	"github.com/Eli15x/ZCOM/src/repository"
+	"github.com/Eli15x/ZCOM/src/utils"
 	"github.com/fatih/structs"
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
-	instanceUser CommandProfile
+	instanceUser CommandUser
 	onceUser    sync.Once
 )
 
-type CommandProfile interface {
+type CommandUser interface {
 	ValidateUser(ctx context.Context, email string, password string) error
 	CreateUser(ctx context.Context, name string, email string, password string) error
 	GetInformationUser(ctx context.Context, id string) ([]bson.M, error)
@@ -29,27 +30,26 @@ type CommandProfile interface {
 
 type user struct{}
 
-func GetInstanceUser() CommandPUser{
-	onceProfile.Do(func() {
+func GetInstanceUser() CommandUser {
+	onceUser.Do(func() {
 		instanceUser = &user{}
 	})
 	return instanceUser
 }
 
 
-func (p *profile) ValidateUser(ctx context.Context, email string, password string) error {
-	var user models.user
-	var userId = utils.CreateCodeId()
+func (u *user) ValidateUser(ctx context.Context, email string, password string) error {
+	var user model.user
 	
-	email := map[string]interface{}{"email": email}
+	emailValidate := map[string]interface{}{"email": email}
 
-	result, err := repository.Find(ctx, "user", email, &user)
+	result, err := repository.Find(ctx, "user", emailValidate, &user)
 	if err != nil {
 		return errors.New("Validate user: problem to get information into MongoDB")
 	}
 
 	passwordEncrypt := utils.Encrypt(password)
-	if passwordEncrypt != result.Email{
+	if passwordEncrypt != result.PassWord{
 		return errors.New("Password user: wrong password")
 	}
 	
@@ -57,7 +57,7 @@ func (p *profile) ValidateUser(ctx context.Context, email string, password strin
 }
 
 
-func (p *profile) CreateUser(ctx context.Context, user models.userRequest) error {
+func (u *user) CreateUser(ctx context.Context, user models.userRequest) error {
 
 	var userId = utils.CreateCodeId()
 	user := &models.user{
@@ -84,7 +84,7 @@ func (p *profile) CreateUser(ctx context.Context, user models.userRequest) error
 }
 
 
-func (p *profile) Edituser(ctx context.Context, user models.user) error {
+func (u *user) Edituser(ctx context.Context, user models.user) error {
 
 	user := &models.user{
 		UserId:   user.userId,
@@ -99,7 +99,7 @@ func (p *profile) Edituser(ctx context.Context, user models.user) error {
 	_, err := client.GetInstance().UpdateOne(ctx, "user", userInsert)
 	if err != nil {
 		return errors.New("Edit User: problem to update into MongoDB")
-		adicionar aqui retorno de erro (500)
+		//adicionar aqui retorno de erro (500)
 	}
 
 	return nil
@@ -107,7 +107,7 @@ func (p *profile) Edituser(ctx context.Context, user models.user) error {
 
 
 
-func (p *user) GetInformationUser(ctx context.Context, id string) ([]bson.M, error) {
+func (u *user) GetInformationUser(ctx context.Context, id string) ([]bson.M, error) {
 	var user models.user
 
 	userId := map[string]interface{}{"UserId": id}
@@ -120,7 +120,7 @@ func (p *user) GetInformationUser(ctx context.Context, id string) ([]bson.M, err
 	return result, nil
 }
 
-func (p *profile) DeleteUser(ctx context.Context, userId string) error {
+func (u *user) DeleteUser(ctx context.Context, userId string) error {
 
 	userId := map[string]interface{}{"UserId": id}
 

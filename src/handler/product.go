@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-func ValidateUser(c *gin.Context) {
+func ValidateProduct(c *gin.Context) {
 	json_map := make(map[string]interface{})
 	err := json.NewDecoder(c.Request.Body).Decode(&json_map)
 
@@ -20,20 +20,20 @@ func ValidateUser(c *gin.Context) {
 		return
 	}
 
-	password := json_map["password"].(string)
-	email := json_map["email"].(string)
+	barCodeNumber := json_map["barCodeNumber"].(string)
+	name := json_map["name"].(string)
 
-	if email == "" {
-		c.String(http.StatusBadRequest, "Validate User Error: email not find")
+	if barCodeNumber == "" {
+		c.String(http.StatusBadRequest, "Validate Product Error: productId not find")
 		return
 	}
 
-	if password == "" {
-		c.String(http.StatusBadRequest, "Create User Error: password not find")
+	if name == "" {
+		c.String(http.StatusBadRequest, "Validate Product Error: Name not find")
 		return
 	}
 
-	userId, err := service.GetInstanceUser().ValidateUser(context.Background(), email, password)
+	userId, err := service.GetInstanceUser().ValidateUser(context.Background(), barCodeNumber, name)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -42,7 +42,7 @@ func ValidateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, &userId)
 }
 
-func CreateUser(c *gin.Context) {
+func CreateProduct(c *gin.Context) {
 
 	var user model.UserRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&user)
@@ -53,22 +53,22 @@ func CreateUser(c *gin.Context) {
 	}
 
 	if user.Name == "" {
-		c.String(http.StatusBadRequest, "Create User Error: name not find")
+		c.String(http.StatusBadRequest, "Create Product Error: name not find")
 		return
 	}
 
 	if user.Email == "" {
-		c.String(400, "Create User Error: email not find")
+		c.String(400, "Create Product Error: email not find")
 		return
 	}
 
 	if user.PassWord == "" {
-		c.String(400, "Create User Error: password not find")
+		c.String(400, "Create Product Error: password not find")
 		return
 	}
 
 	if user.IdAcess == 0 {
-		c.String(400, "Create User Error: idAcess not find")
+		c.String(400, "Create Product Error: idAcess not find")
 		return
 	}
 
@@ -81,7 +81,7 @@ func CreateUser(c *gin.Context) {
 	c.String(http.StatusOK, "" )
 }
 
-func EditUser(c *gin.Context) {
+func EditProduct(c *gin.Context) {
 
 	var user model.User
 	err := json.NewDecoder(c.Request.Body).Decode(&user)
@@ -121,7 +121,7 @@ func EditUser(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
-func DeleteUser(c *gin.Context) {
+func DeletProduct(c *gin.Context) {
 
 	var user model.User
 	err := json.NewDecoder(c.Request.Body).Decode(&user)
@@ -145,7 +145,7 @@ func DeleteUser(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
-func GetInformationByUserId(c *gin.Context) {
+func GetByBarCode(c *gin.Context) {
 
 	var user model.User
 	err := json.NewDecoder(c.Request.Body).Decode(&user)
@@ -171,7 +171,7 @@ func GetInformationByUserId(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func GetUserByName(c *gin.Context) {
+func GetProductByName(c *gin.Context) {
 
 	var user model.UserRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&user)
@@ -197,34 +197,7 @@ func GetUserByName(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-
-func GetUsersByAcess(c *gin.Context) {
-
-	var user model.User
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
-
-	if err != nil {
-		c.String(400, "%s", err)
-		return
-	}
-
-	if user.IdAcess == 0 {
-		c.String(http.StatusBadRequest, "Get User By Acess: IdAcess not find")
-		return
-	}
-
-	/*result, err := service.GetInstanceUser().GetUsersByAcess(context.Background(), user.IdAcess)
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}*/
-
-	log.Infof("[GetInformation] Object : %s \n", "", "")
-
-	c.JSON(http.StatusOK,"") //return list
-}
-
-func GetUsers(c *gin.Context) {
+func GetProducts(c *gin.Context) {
 
 	c.JSON(http.StatusOK,"") //return list
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/Eli15x/ZCOM/src/client"
 	"github.com/Eli15x/ZCOM/src/handler"
 	"github.com/bugsnag/bugsnag-go"
@@ -26,7 +27,10 @@ func main() {
 		// more configuration options
 	})
 
-	bugsnag.Notify(fmt.Errorf("Test error"))
+	err := godotenv.Load(".env")
+    if err != nil {
+        fmt.Errorf("Error loading .env file")
+    }
 
 	//Context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -47,25 +51,26 @@ func main() {
 
 	router.Use(cors.New(config))
 
-	/*router.POST("/login", handlers.ValidateUser)
+	router.POST("/login", handlers.ValidateUser)
 	router.POST("/cadastro", handlers.CreateUser)
-	router.POST("/user/edit", handlers.EditUser)
-	router.POST("/user/delete", handlers.DeleteUser)
-	router.POST("/user/getByUserId", handlers.DeleteUser)
-	router.POST("/user/getByName", handlers.DeleteUser)
-	router.POST("/user/getByFunction", handlers.DeleteUser)
-	router.POST("/user/getByAcess", handlers.DeleteUser)
+	router.PUT("/user/edit", handlers.EditUser)
+	router.DELETE("/user/delete", handlers.DeleteUser)
+	router.GET("/user/getByUserId", handlers.GetInformationByUserId)
+	router.GET("/user/getByName", handlers.GetUserByName)
+	router.GET("/user/getByAcess", handlers.GetUsersByAcess)
+	router.GET("/users", handlers.GetUsers)
 
-	router.POST("/product/create", handlers.CreateWriter)
-	router.GET("/product/getByName", handlers.GetInformationWriter)
-	router.GET("/product/getByCode", handlers.DeleteWriter)
-	router.GET("/product/getByBarCode", handlers.DeleteWriter)
-	router.GET("/product/getAll", handlers.GetInformationWriters)
-	router.POST("/product/edit", handlers.EditWriter)
-	router.DELETE("/product/delete", handlers.DeleteWriter)
+
+	router.POST("/product/create", handlers.CreateProduct)
+	router.GET("/product/getByName", handlers.GetProductByName)
+	router.GET("/product/getByBarCode", handlers.GetByBarCode)
+	router.GET("/product/getAll", handlers.GetProducts)
+	router.POST("/product/edit", handlers.EditProduct)
+	router.DELETE("/product/delete", handlers.DeletProduct)
 	
 	//router.POST("/sale/send", handlers.CreateBook)
 	//.POST("/sales/send", handlers.CreateBook)*/
+
 
 
 	router.Run(":1323")

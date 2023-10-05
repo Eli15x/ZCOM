@@ -1,7 +1,7 @@
 package service
 
 import (
-	//"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"strings"
 	"context"
 	"errors"
@@ -83,20 +83,14 @@ func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
 }
 
 func (u *user) EditUser(ctx context.Context, user model.User) error {
-	userModel := &model.User{
-		UserId:   user.UserId,
-		Name:     user.Name,
-		Email:    user.Email,
-		PassWord: user.PassWord,
-		IdAcess:  user.IdAcess,
-	}
 
-	userUpdate:= structs.Map(userModel)
+	userUpdate:= structs.Map(user)
+	userId := map[string]interface{}{"UserId": user.UserId}
+	change := bson.M{"$set": userUpdate}
 
-	_, err := client.GetInstance().UpdateOne(ctx, "user", userUpdate, &model.User{})
+	_, err := client.GetInstance().UpdateOne(ctx, "user", userId, change)
 	if err != nil {
 		return errors.New("Edit User: problem to update into MongoDB")
-		//adicionar aqui retorno de erro (500)
 	}
 
 	return nil

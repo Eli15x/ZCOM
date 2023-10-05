@@ -2,11 +2,11 @@ package model
 
 
 type User struct {
-	UserId             string    `json:"UserId,omitempty" bson:"UserId,omitempty"`
-	Name               string    `json:"Name,omitempty" bson:"Name,omitempty"`
-	Email              string    `json:"Email,omitempty" bson:"Email,omitempty"`
-	PassWord           string    `json:"PassWord,omitempty" bson:"PassWord,omitempty"`
-	IdAcess     	   int       `json:"IdAcess,omitempty" bson:"IdAcess,omitempty"`
+	UserId             string    `json:"userId,omitempty" bson:"userId,omitempty"`
+	Name               string    `json:"name,omitempty" bson:"name,omitempty"`
+	Email              string    `json:"email,omitempty" bson:"email,omitempty"`
+	PassWord           string    `json:"passWord,omitempty" bson:"passWord,omitempty"`
+	IdAcess     	   int       `json:"idAcess,omitempty" bson:"idAcess,omitempty"`
 }
 
 type UserRequest struct {

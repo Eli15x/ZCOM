@@ -24,7 +24,7 @@ var (
 type MongoDB interface {
 	Insert(ctx context.Context, collName string, doc interface{}) (interface{}, error)
 	Find(ctx context.Context, collName string, query map[string]interface{}, doc interface{}) (*mongo.Cursor, error)
-	FindOne(ctx context.Context, collName string, filter interface{}, opts ...*options.FindOneOptions) MongoFindOneResult
+	FindOne(ctx context.Context, collName string, filter interface{},opts ...*options.FindOneOptions) (*mongo.SingleResult, error) 
 	Count(ctx context.Context, collName string, query map[string]interface{}) (int64, error)
 	UpdateOne(ctx context.Context, collName string, query map[string]interface{}, doc interface{}) (*mongo.UpdateResult, error)
 	Remove(ctx context.Context, collName string, query map[string]interface{}) error
@@ -103,10 +103,12 @@ func (m *mongodbImpl) Find(ctx context.Context, collName string, query map[strin
 }
 
 // FindOne finds one document in mongo
-func (m *mongodbImpl) FindOne(ctx context.Context, collName string, filter interface{}, opts ...*options.FindOneOptions) MongoFindOneResult {
+func (m *mongodbImpl) FindOne(ctx context.Context, collName string, filter interface{}, opts ...*options.FindOneOptions) (*mongo.SingleResult,error) {
+
 	coll := m.client.Database(m.dbName).Collection(collName)
-	findResult := coll.FindOne(ctx, filter)
-	return findResult
+	result := coll.FindOne(ctx, filter)
+
+	return result,nil
 }
 
 // UpdateOne updates one or more documents in the collection

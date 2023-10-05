@@ -20,7 +20,7 @@ func ValidateUser(c *gin.Context) {
 		return
 	}
 
-	password := json_map["password"].(string)
+	password := json_map["passWord"].(string)
 	email := json_map["email"].(string)
 
 	if email == "" {

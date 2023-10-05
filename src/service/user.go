@@ -1,9 +1,13 @@
 package service
 
 import (
+	//"go.mongodb.org/mongo-driver/bson"
+	"strings"
 	"context"
 	"errors"
 	"sync"
+	"fmt"
+
 
 	"github.com/Eli15x/ZCOM/src/model"
 	"github.com/Eli15x/ZCOM/src/client"
@@ -13,41 +17,43 @@ import (
 )
 
 var (
-	instanceUser CommandUser
-	onceUser    sync.Once
+	instanceServiceUser ServiceUser
+	onceServiceUser    sync.Once
 )
 
-type CommandUser interface {
+type ServiceUser interface {
 	ValidateUser(ctx context.Context, email string, password string) (string, error)
 	CreateUser(ctx context.Context, user model.UserRequest) error
 	EditUser(ctx context.Context, user model.User) error
 	GetInformationUser(ctx context.Context, id string) (model.User, error)
-	GetUserByName(ctx context.Context, name string) (model.User, error)
+	GetUserByName(ctx context.Context, name string) (model.User,error)
 	GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error)
 	DeleteUser(ctx context.Context, id string) error
 }
 
 type user struct{}
 
-func GetInstanceUser() CommandUser {
-	onceUser.Do(func() {
-		instanceUser = &user{}
+func GetInstanceUser() ServiceUser {
+	onceServiceUser.Do(func() {
+		instanceServiceUser = &user{}
 	})
-	return instanceUser
+	return instanceServiceUser
 }
 
 func (u *user) ValidateUser(ctx context.Context, email string, password string) (string, error) {
-	var user model.User
 	
-	emailValidate := map[string]interface{}{"email": email}
-
-	result, err := repository.Find(ctx, "user", emailValidate, &user)
+	emailValidate := map[string]interface{}{"Email": email}
+	user, err := repository.GetInstance().FindOne(ctx, "user", emailValidate)
 	if err != nil {
 		return "",errors.New("Validate user: problem to get information into MongoDB")
 	}
 
+
+	fmt.Println(user)
 	passwordEncrypt := utils.Encrypt(password)
-	if passwordEncrypt != result.PassWord{
+	fmt.Println(passwordEncrypt)
+	fmt.Println(user.PassWord)
+	if strings.Compare(passwordEncrypt, user.PassWord) != 0 {
 		return "", errors.New("Password user: wrong password")
 	}
 	
@@ -101,12 +107,12 @@ func (u *user) GetInformationUser(ctx context.Context, id string) (model.User, e
 
 	userId := map[string]interface{}{"UserId": id}
 
-	result, err := repository.Find(ctx, "user", userId, &user)
+	user, err := repository.GetInstance().FindOne(ctx, "user", userId)
 	if err != nil {
-		return user, errors.New("Add Information user: problem to Find Id into MongoDB")
+		return user, errors.New("Get Information user: problem to Find Id into MongoDB")
 	}
 
-	return result, nil
+	return user, nil
 }
 
 func (u *user) DeleteUser(ctx context.Context, id string) error {
@@ -123,27 +129,25 @@ func (u *user) DeleteUser(ctx context.Context, id string) error {
 
 func (u *user) GetUserByName(ctx context.Context, name string) (model.User, error){
 
-	var user model.User
-
 	Name := map[string]interface{}{"Name": name}
-
-	result, err := repository.Find(ctx, "user", Name, &user)
+	user, err := repository.GetInstance().FindOne(ctx, "user", Name)
 	if err != nil {
-		return user, errors.New("Add Information user: problem to Find Id into MongoDB")
+	
+		return user, errors.New("Get user by name: problem to Find Id into MongoDB")
 	}
 
-	return result, nil
+	return user, nil
 }
 
 func (u *user) GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error){
-	/*var user []model.User
+	var users []model.User
 
-	userId := map[string]interface{}{"UserId": id}
+	IdAcess := map[string]interface{}{"idAcess": idAcess}
 
-	/*result, err := repository.Find(ctx, "user", userId, &user)
+	_, err := repository.GetInstance().Find(ctx, "user", IdAcess, &users)
 	if err != nil {
-		return user, errors.New("Add Information user: problem to Find Id into MongoDB")
-	}*/
+		return users, errors.New("Get Users By Acess: problem to Find Id into MongoDB")
+	}
 
-	return []model.User{}, nil
+	return users, nil
 }

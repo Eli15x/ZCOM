@@ -27,7 +27,8 @@ type ServiceUser interface {
 	EditUser(ctx context.Context, user model.User) error
 	GetInformationUser(ctx context.Context, id string) (model.User, error)
 	GetUserByName(ctx context.Context, name string) (model.User,error)
-	GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error)
+	GetUsersByAcess(ctx context.Context, idAcess int) ([]bson.M, error)
+	GetUsers(ctx context.Context) ([]bson.M, error)
 	DeleteUser(ctx context.Context, id string) error
 }
 
@@ -133,14 +134,27 @@ func (u *user) GetUserByName(ctx context.Context, name string) (model.User, erro
 	return user, nil
 }
 
-func (u *user) GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error){
-	var users []model.User
+func (u *user) GetUsersByAcess(ctx context.Context, idAcess int) ([]bson.M, error){
+	
+	IdAcess := map[string]interface{}{"IdAcess": idAcess}
 
-	IdAcess := map[string]interface{}{"idAcess": idAcess}
-
-	_, err := repository.GetInstance().Find(ctx, "user", IdAcess, &users)
+	users, err := repository.GetInstance().Find(ctx, "user", IdAcess)
 	if err != nil {
-		return users, errors.New("Get Users By Acess: problem to Find Id into MongoDB")
+		return nil, errors.New("Get Users By Acess: problem to Find Id into MongoDB")
+	}
+
+	return users, nil
+}
+
+
+func (u *user) GetUsers(ctx context.Context) ([]bson.M, error){
+
+	all := map[string]interface{}{}
+	//allValue := bson.M{"$all": all}
+
+	users, err := repository.GetInstance().Find(ctx, "user", all)
+	if err != nil {
+		return nil, errors.New("Get Users: problem to Find Id into MongoDB")
 	}
 
 	return users, nil

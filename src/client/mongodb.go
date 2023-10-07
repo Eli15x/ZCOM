@@ -23,7 +23,7 @@ var (
 
 type MongoDB interface {
 	Insert(ctx context.Context, collName string, doc interface{}) (interface{}, error)
-	Find(ctx context.Context, collName string, query map[string]interface{}, doc interface{}) (*mongo.Cursor, error)
+	Find(ctx context.Context, collName string, query map[string]interface{}) (*mongo.Cursor, error)
 	FindOne(ctx context.Context, collName string, filter interface{},opts ...*options.FindOneOptions) (*mongo.SingleResult, error) 
 	Count(ctx context.Context, collName string, query map[string]interface{}) (int64, error)
 	UpdateOne(ctx context.Context, collName string, query map[string]interface{}, doc interface{}) (*mongo.UpdateResult, error)
@@ -93,7 +93,7 @@ func (m *mongodbImpl) Insert(ctx context.Context, collName string, doc interface
 }
 
 // Find finds all documents in the collection
-func (m *mongodbImpl) Find(ctx context.Context, collName string, query map[string]interface{}, doc interface{}) (*mongo.Cursor, error) {
+func (m *mongodbImpl) Find(ctx context.Context, collName string, query map[string]interface{}) (*mongo.Cursor, error) {
 	cur, err := m.client.Database(m.dbName).Collection(collName).Find(ctx, query)
 	if err != nil {
 		return nil, err

@@ -213,18 +213,24 @@ func GetUsersByAcess(c *gin.Context) {
 		return
 	}
 
-	/*result, err := service.GetInstanceUser().GetUsersByAcess(context.Background(), user.IdAcess)
+	result, err := service.GetInstanceUser().GetUsersByAcess(context.Background(), user.IdAcess)
 	if err != nil {
 		c.String(400, err.Error())
 		return
-	}*/
+	}
 
 	log.Infof("[GetInformation] Object : %s \n", "", "")
 
-	c.JSON(http.StatusOK,"") //return list
+	c.JSON(http.StatusOK,result) 
 }
 
 func GetUsers(c *gin.Context) {
 
-	c.JSON(http.StatusOK,"") //return list
+	result, err := service.GetInstanceUser().GetUsers(context.Background())
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,result) 
 }

@@ -11,68 +11,71 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-func ValidateProduct(c *gin.Context) {
-	json_map := make(map[string]interface{})
-	err := json.NewDecoder(c.Request.Body).Decode(&json_map)
-
-	if err != nil {
-		c.String(400, "%s", err)
-		return
-	}
-
-	barCodeNumber := json_map["barCodeNumber"].(string)
-	name := json_map["name"].(string)
-
-	if barCodeNumber == "" {
-		c.String(http.StatusBadRequest, "Validate Product Error: productId not find")
-		return
-	}
-
-	if name == "" {
-		c.String(http.StatusBadRequest, "Validate Product Error: Name not find")
-		return
-	}
-
-	userId, err := service.GetInstanceUser().ValidateUser(context.Background(), barCodeNumber, name)
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, &userId)
-}
-
 func CreateProduct(c *gin.Context) {
 
-	var user model.UserRequest
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var product model.Product
+	err := json.NewDecoder(c.Request.Body).Decode(&product)
 
 	if err != nil {
 		c.String(400, "%s", err)
 		return
 	}
 
-	if user.Name == "" {
-		c.String(http.StatusBadRequest, "Create Product Error: name not find")
+	if product.BarCodeNumber == "" {
+		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	if user.Email == "" {
-		c.String(400, "Create Product Error: email not find")
+	if product.Name == "" {
+		c.String(400, "Create Product Error: Name not informed")
 		return
 	}
 
-	if user.PassWord == "" {
-		c.String(400, "Create Product Error: password not find")
+	if product.NCM == "" {
+		c.String(400, "Create Product Error: NCM not informed")
 		return
 	}
 
-	if user.IdAcess == 0 {
-		c.String(400, "Create Product Error: idAcess not find")
+	if product.CFOP == "" {
+		c.String(400, "Create Product Error: CFOP not informed")
 		return
 	}
 
-	err = service.GetInstanceUser().CreateUser(context.Background(), user)
+	/*if product.Desconto == 0 {
+		c.String(400, "Create Product Error: Desconto not informed")
+		return
+	}
+
+
+	if product.OutrosDesconto == 0 {
+		c.String(400, "Create Product Error: OutrosDesconto not informed")
+		return
+	}*/
+
+
+	if product.IndRegra == "" {
+		c.String(400, "Create Product Error: IndRegra not informed")
+		return
+	}
+
+
+	if product.UCom == 0 {
+		c.String(400, "Create Product Error: UCom not informed")
+		return
+	}
+
+	if product.QCom == 0 {
+		c.String(400, "Create Product Error: QCom not informed")
+		return
+	}
+
+	if product.VUnCom == 0 {
+		c.String(400, "Create Product Error: VUnCom not informed")
+		return
+	}
+
+
+	err = service.GetInstanceProduct().CreateProduct(context.Background(), product)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -83,36 +86,68 @@ func CreateProduct(c *gin.Context) {
 
 func EditProduct(c *gin.Context) {
 
-	var user model.User
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var product model.Product
+	err := json.NewDecoder(c.Request.Body).Decode(&product)
 
 	if err != nil {
 		c.String(400, "%s", err)
 		return
 	}
 
-	if user.Name == "" {
-		c.String(http.StatusBadRequest, "Edit User Error: name not find")
+	if product.BarCodeNumber == "" {
+		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	if user.Email == "" {
-		c.String(400, "Edit User Error: email not find")
+	if product.Name == "" {
+		c.String(400, "Create Product Error: Name not informed")
 		return
 	}
 
-	if user.PassWord == "" {
-		c.String(400, "Edit User Error: password not find")
+	if product.NCM == "" {
+		c.String(400, "Create Product Error: NCM not informed")
+		return
+	}
+
+	if product.CFOP == "" {
+		c.String(400, "Create Product Error: CFOP not informed")
+		return
+	}
+
+	/*if product.Desconto == 0 {
+		c.String(400, "Create Product Error: Desconto not informed")
 		return
 	}
 
 
-	if user.UserId == "" {
-		c.String(400, "Edit User Error: password not find")
+	if product.OutrosDesconto == 0 {
+		c.String(400, "Create Product Error: OutrosDesconto not informed")
+		return
+	}*/
+
+
+	if product.IndRegra == "" {
+		c.String(400, "Create Product Error: IndRegra not informed")
 		return
 	}
 
-	err = service.GetInstanceUser().EditUser(context.Background(), user)
+
+	if product.UCom == 0 {
+		c.String(400, "Create Product Error: UCom not informed")
+		return
+	}
+
+	if product.QCom == 0 {
+		c.String(400, "Create Product Error: QCom not informed")
+		return
+	}
+
+	if product.VUnCom == 0 {
+		c.String(400, "Create Product Error: VUnCom not informed")
+		return
+	}
+
+	err = service.GetInstanceProduct().EditProduct(context.Background(), product)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -123,20 +158,20 @@ func EditProduct(c *gin.Context) {
 
 func DeletProduct(c *gin.Context) {
 
-	var user model.User
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var product model.Product
+	err := json.NewDecoder(c.Request.Body).Decode(&product)
 
 	if err != nil {
 		c.String(400, "%s", err)
 		return
 	}
 
-	if user.UserId == "" {
-		c.String(http.StatusBadRequest, "Delete User Error: userId not find")
+	if product.BarCodeNumber == "" {
+		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	err = service.GetInstanceUser().DeleteUser(context.Background(), user.UserId)
+	err = service.GetInstanceProduct().DeleteProduct(context.Background(), product.BarCodeNumber)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -147,20 +182,20 @@ func DeletProduct(c *gin.Context) {
 
 func GetByBarCode(c *gin.Context) {
 
-	var user model.User
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var product model.Product
+	err := json.NewDecoder(c.Request.Body).Decode(&product)
 
 	if err != nil {
 		c.String(400, "%s", err)
 		return
 	}
 
-	if user.UserId == "" {
-		c.String(http.StatusBadRequest, "Delete User Error: userId not find")
+	if product.BarCodeNumber == "" {
+		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), user.UserId)
+	result, err := service.GetInstanceProduct().GetProduct(context.Background(), product.BarCodeNumber)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -173,20 +208,21 @@ func GetByBarCode(c *gin.Context) {
 
 func GetProductByName(c *gin.Context) {
 
-	var user model.UserRequest
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	var product model.Product
+	err := json.NewDecoder(c.Request.Body).Decode(&product)
 
 	if err != nil {
 		c.String(400, "%s", err)
 		return
 	}
 
-	if user.Name == "" {
-		c.String(http.StatusBadRequest, "Get User By Name: name not find")
+	if product.Name == "" {
+		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	result, err := service.GetInstanceUser().GetUserByName(context.Background(), user.Name)
+
+	result, err := service.GetInstanceProduct().GetProductByName(context.Background(), product.Name)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -199,5 +235,12 @@ func GetProductByName(c *gin.Context) {
 
 func GetProducts(c *gin.Context) {
 
-	c.JSON(http.StatusOK,"") //return list
+	result, err := service.GetInstanceProduct().GetProduct(context.Background(),"")
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+
+	c.JSON(http.StatusOK, result) //return list
 }

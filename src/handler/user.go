@@ -160,7 +160,7 @@ func GetInformationByUserId(c *gin.Context) {
 		return
 	}
 
-	result, err := service.GetInstanceUser().GetInformationUser(context.Background(), user.UserId)
+	result, err := service.GetInstanceUser().GetUser(context.Background(), user.UserId)
 	if err != nil {
 		c.String(400, err.Error())
 		return

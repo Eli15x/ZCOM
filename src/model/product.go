@@ -1,16 +1,16 @@
 package model
 
 
-type Procut struct {
-	BarCodeNumber   string       `json:"barCodeNumber,omitempty" bson:"barCodeNumber"`
-	Name            string       `json:"name,omitempty" bson:"name"`
-	NCM             string       `json:"ncm,omitempty" bson:"ncm"`
-	CFOP     	    string       `json:"cfop,omitempty" bson:"cfop"`
-	Desconto     	int          `json:"desconto,omitempty" bson:"desconto"`
-	OutrosDesconto  int          `json:"outrosDesconto",omitempty" bson:"outrosDesconto"`
-	IndRegra     	string       `json:"indRegra,omitempty" bson:"indRegra"`
-	UCom     	   	int       	 `json:"uCom,omitempty" bson:"uCom"`
-	QCom     	   	string       `json:"qCom,omitempty" bson:"qCom"`
-	VUnCom     	   	string       `json:"vUnCom,omitempty" bson:"vUnCom"`
-	Imposto     	map[string]interface{}   `json:"imposto,omitempty" bson:"imposto"`
+type Product struct {
+	BarCodeNumber   string       `json:"barCodeNumber,omitempty" bson:"BarCodeNumber"`
+	Name            string       `json:"name,omitempty" bson:"Name"`
+	NCM             string       `json:"ncm,omitempty" bson:"NCM"`
+	CFOP     	    string       `json:"cfop,omitempty" bson:"CFOP"`
+	Desconto     	float64          `json:"desconto,omitempty" bson:"Desconto"`
+	OutrosDesconto  float64          `json:"outrosDesconto,omitempty" bson:"OutrosDesconto"`
+	IndRegra     	string       `json:"indRegra,omitempty" bson:"IndRegra"`
+	UCom     	   	float64       	 `json:"uCom,omitempty" bson:"UCom"`
+	QCom     	   	float64       `json:"qCom,omitempty" bson:"QCom"`
+	VUnCom     	   	float64       `json:"vUnCom,omitempty" bson:"VUnCom"`
+	Imposto     	map[string]interface{}   `json:"imposto,omitempty" bson:"Imposto"`
 }

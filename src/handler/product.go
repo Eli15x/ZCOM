@@ -156,7 +156,7 @@ func EditProduct(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
-func DeletProduct(c *gin.Context) {
+func DeleteProduct(c *gin.Context) {
 
 	var product model.Product
 	err := json.NewDecoder(c.Request.Body).Decode(&product)
@@ -235,7 +235,7 @@ func GetProductByName(c *gin.Context) {
 
 func GetProducts(c *gin.Context) {
 
-	result, err := service.GetInstanceProduct().GetProduct(context.Background(),"")
+	result, err := service.GetInstanceProduct().GetProducts(context.Background())
 	if err != nil {
 		c.String(400, err.Error())
 		return

@@ -52,9 +52,9 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 
 	productUpdate:= structs.Map(product)
 	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
-	change := bson.M{"$set": barCode}
+	change := bson.M{"$set": productUpdate}
 
-	_, err := client.GetInstance().UpdateOne(ctx, "product", productUpdate, change)
+	_, err := client.GetInstance().UpdateOne(ctx, "product", barCode, change)
 	if err != nil {
 		return errors.New("Edit product: problem to update into MongoDB")
 	}

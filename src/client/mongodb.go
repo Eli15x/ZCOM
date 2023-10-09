@@ -113,9 +113,7 @@ func (m *mongodbImpl) FindOne(ctx context.Context, collName string, filter inter
 
 // UpdateOne updates one or more documents in the collection
 func (m *mongodbImpl) UpdateOne(ctx context.Context, collName string, selector map[string]interface{}, update interface{}) (*mongo.UpdateResult, error) {
-
 	updateResult, err := m.client.Database(m.dbName).Collection(collName).UpdateOne(ctx, selector, update)
-	fmt.Println(err)
 	return updateResult, err
 }
 

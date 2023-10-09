@@ -38,7 +38,7 @@ func main() {
 	defer cancel()
 	//Connection to Mongo
 	if err := client.GetInstance().Initialize(ctx); err != nil {
-		bugsnag.Notify(fmt.Errorf("[MONGO DB - MovieWorkNow] Could not resolve Data access layer. Error:"))
+		bugsnag.Notify(fmt.Errorf("[MONGO DB - ZCOM] Could not resolve Data access layer. Error:"))
 	}
 
 	router := gin.Default()
@@ -65,8 +65,8 @@ func main() {
 	router.GET("/product/getByName", handlers.GetProductByName)
 	router.GET("/product/getByBarCode", handlers.GetByBarCode)
 	router.GET("/product/getAll", handlers.GetProducts)
-	router.POST("/product/edit", handlers.EditProduct)
-	router.DELETE("/product/delete", handlers.DeletProduct)
+	router.PUT("/product/edit", handlers.EditProduct)
+	router.DELETE("/product/delete", handlers.DeleteProduct)
 	
 	//router.POST("/sale/send", handlers.CreateBook)
 	//.POST("/sales/send", handlers.CreateBook)*/

@@ -27,6 +27,7 @@ type ServiceUser interface {
 	EditUser(ctx context.Context, user model.User) error
 	GetUser(ctx context.Context, id string) (model.User, error)
 	GetUserByName(ctx context.Context, name string) (model.User,error)
+	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 	GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error)
 	GetUsers(ctx context.Context) ([]model.User, error)
 	DeleteUser(ctx context.Context, id string) error
@@ -63,6 +64,11 @@ func (u *user) ValidateUser(ctx context.Context, email string, password string) 
 
 func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
 
+	userExist, _ := u.GetUserByEmail(ctx, user.Email)
+	if userExist.UserId != "" {
+		return errors.New("User Create: this email exists")
+	}
+
 	var userId = utils.CreateCodeId()
 	userModel := &model.User{
 		UserId:   userId,
@@ -84,6 +90,11 @@ func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
 }
 
 func (u *user) EditUser(ctx context.Context, user model.User) error {
+
+	userExist, _ := u.GetUser(ctx, user.UserId)
+	if userExist.UserId == "" {
+		return errors.New("User Edit: this userId not exists")
+	}
 
 	userUpdate:= structs.Map(user)
 	userId := map[string]interface{}{"UserId": user.UserId}
@@ -112,6 +123,10 @@ func (u *user) GetUser(ctx context.Context, id string) (model.User, error) {
 
 func (u *user) DeleteUser(ctx context.Context, id string) error {
 
+	userExist, _ := u.GetUser(ctx, id)
+	if userExist.UserId == "" {
+		return errors.New("User Delete: this userId not exists")
+	}
 	userId := map[string]interface{}{"UserId": id}
 
 	err := client.GetInstance().Remove(ctx, "user", userId)
@@ -144,6 +159,18 @@ func (u *user) GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, 
 	}
 
 	return users, nil
+}
+
+func (u *user) GetUserByEmail(ctx context.Context, email string) (model.User, error){
+
+	Email := map[string]interface{}{"Email": email}
+
+	user, err := repository.GetInstanceUser().FindOne(ctx, "user", Email)
+	if err != nil {
+		return model.User{}, errors.New("Get Users By Acess: problem to Find Id into MongoDB")
+	}
+
+	return user, nil
 }
 
 

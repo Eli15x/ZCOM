@@ -38,17 +38,27 @@ func GetInstanceProduct() ServiceProduct {
 
 func (p *product) CreateProduct(ctx context.Context, product model.Product) error {
 
+	productExist, _ := p.GetProduct(ctx, product.BarCodeNumber)
+	if productExist.BarCodeNumber != "" {
+		return errors.New("Product: this barcode exists")
+	}
+	
 	productInsert := structs.Map(product)
 
 	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
 	if err != nil {
-		return errors.New("Product user: problem to insert into MongoDB")
+		return errors.New("Product: problem to insert into MongoDB")
 	}
 
 	return nil
 }
 
 func (p *product) EditProduct(ctx context.Context, product model.Product) error{
+
+	productExist, _ := p.GetProduct(ctx, product.BarCodeNumber)
+	if productExist.BarCodeNumber == "" {
+		return errors.New("Edit Product: doesn't have any match for this barCode")
+	}
 
 	productUpdate:= structs.Map(product)
 	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
@@ -75,6 +85,11 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 
 func (p *product) DeleteProduct(ctx context.Context, id string) error{
 
+	productExist, _ := p.GetProduct(ctx, id)
+	if productExist.BarCodeNumber == "" {
+		return errors.New("Delete Product: doesn't have any match for this barCode")
+	}
+
 	barCode := map[string]interface{}{"BarCodeNumber": id}
 
 	err := client.GetInstance().Remove(ctx, "product", barCode)
@@ -98,7 +113,7 @@ func (p *product) GetProductByName(ctx context.Context, name string) (model.Prod
 }
 
 
-func (p *product) GetProducts(ctx context.Context) ([]model.Product, error){
+func (p *product) GetProducts(ctx context.Context)([]model.Product, error){
 
 	all := map[string]interface{}{}
 

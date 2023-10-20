@@ -1,6 +1,7 @@
 package main
 
 import (
+	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
 	//"time"
 	//"context"
 
@@ -41,6 +42,12 @@ func main() {
 		bugsnag.Notify(fmt.Errorf("[MONGO DB - ZCOM] Could not resolve Data access layer. Error:"))
 	}
 
+
+	if err := kafka.GetInstanceKafka().Initialize(); err != nil {
+		fmt.Println(err)
+		fmt.Errorf("Error initialize kafka Producer")
+	}
+
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
@@ -67,6 +74,7 @@ func main() {
 	router.GET("/product/getAll", handlers.GetProducts)
 	router.PUT("/product/edit", handlers.EditProduct)
 	router.DELETE("/product/delete", handlers.DeleteProduct)
+    //rota para ser acionada para fazer job de rotina para salvar produtos.
 	
 	//router.POST("/sale/send", handlers.CreateBook)
 	//.POST("/sales/send", handlers.CreateBook)*/

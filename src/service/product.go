@@ -1,16 +1,18 @@
 package service
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"encoding/json"
+	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
+	//"go.mongodb.org/mongo-driver/bson"
 	"context"
 	"errors"
 	"sync"
 
 
 	"github.com/Eli15x/ZCOM/src/model"
-	"github.com/Eli15x/ZCOM/src/client"
+	//"github.com/Eli15x/ZCOM/src/client"
 	"github.com/Eli15x/ZCOM/src/repository"
-	"github.com/fatih/structs"
+	//"github.com/fatih/structs"
 )
 
 var (
@@ -43,12 +45,24 @@ func (p *product) CreateProduct(ctx context.Context, product model.Product) erro
 		return errors.New("Product: this barcode exists")
 	}
 	
-	productInsert := structs.Map(product)
+	//vejo se o kafka roda normalmente e está funcionando.
+	//vejo se o banco está funcionando
+	//se o banco nao estiver funcionando e nem o kafka
+	//neste caso eu mando um erro
+
+	productJson, err := json.Marshal(product)
+
+	err = kafka.GetInstanceKafka().SendMessage(productJson, "createProduct")
+	if err != nil {
+		return err
+	}
+
+	/*productInsert := structs.Map(product)
 
 	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
 	if err != nil {
 		return errors.New("Product: problem to insert into MongoDB")
-	}
+	}*/
 
 	return nil
 }
@@ -60,20 +74,32 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 		return errors.New("Edit Product: doesn't have any match for this barCode")
 	}
 
-	productUpdate:= structs.Map(product)
+	productJson, err := json.Marshal(product) 
+
+	err = kafka.GetInstanceKafka().SendMessage(productJson, "editProduct")
+	if err != nil {
+		return err
+	}
+	
+	/*productUpdate:= structs.Map(product)
 	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
 	change := bson.M{"$set": productUpdate}
 
 	_, err := client.GetInstance().UpdateOne(ctx, "product", barCode, change)
 	if err != nil {
 		return errors.New("Edit product: problem to update into MongoDB")
-	}
+	}*/
 
 	return nil
 }
 
 func (p *product) GetProduct(ctx context.Context, id string) (model.Product, error) {
 	var product model.Product
+
+	//vejo se o banco está funcionando
+	//se o banco nao estiver funcionando 
+	//eu busco no arquivo texto o produto
+
 	barCode := map[string]interface{}{"BarCodeNumber": id}
 	product, err := repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
 	if err != nil {
@@ -90,12 +116,24 @@ func (p *product) DeleteProduct(ctx context.Context, id string) error{
 		return errors.New("Delete Product: doesn't have any match for this barCode")
 	}
 
-	barCode := map[string]interface{}{"BarCodeNumber": id}
+	//vejo se o kafka roda normalmente e está funcionando.
+	//vejo se o banco está funcionando
+	//se o banco nao estiver funcionando e nem o kafka
+	//neste caso eu mando um erro
+
+	productJson, err := json.Marshal(productExist)
+
+	err = kafka.GetInstanceKafka().SendMessage(productJson, "deleteProduct")
+	if err != nil {
+		return err
+	}
+
+	/*barCode := map[string]interface{}{"BarCodeNumber": id}
 
 	err := client.GetInstance().Remove(ctx, "product", barCode)
 	if err != nil {
 		return errors.New("Delete Product: problem to delete into MongoDB")
-	}
+	}*/
 
 	return nil
 }

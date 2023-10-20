@@ -1,7 +1,9 @@
 package service
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"encoding/json"
+	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
+	//"go.mongodb.org/mongo-driver/bson"
 	"strings"
 	"context"
 	"errors"
@@ -10,10 +12,10 @@ import (
 
 
 	"github.com/Eli15x/ZCOM/src/model"
-	"github.com/Eli15x/ZCOM/src/client"
+	//"github.com/Eli15x/ZCOM/src/client"
 	"github.com/Eli15x/ZCOM/src/repository"
 	"github.com/Eli15x/ZCOM/src/utils"
-	"github.com/fatih/structs"
+	//"github.com/fatih/structs"
 )
 
 var (
@@ -78,12 +80,20 @@ func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
 		IdAcess:  user.IdAcess,
 	}
 
-	userInsert := structs.Map(userModel)
+
+	userJson, err := json.Marshal(userModel)
+
+	err = kafka.GetInstanceKafka().SendMessage(userJson, "createUser")
+	if err != nil {
+		return err
+	}
+
+	/*userInsert := structs.Map(userModel)
 
 	_, err := client.GetInstance().Insert(ctx, "user", userInsert)
 	if err != nil {
 		return errors.New("Create user: problem to insert into MongoDB")
-	}
+	}*/
 
 
 	return nil
@@ -96,14 +106,20 @@ func (u *user) EditUser(ctx context.Context, user model.User) error {
 		return errors.New("User Edit: this userId not exists")
 	}
 
-	userUpdate:= structs.Map(user)
+	userJson, err := json.Marshal(user)
+
+	err = kafka.GetInstanceKafka().SendMessage(userJson, "editUser")
+	if err != nil {
+		return err
+	}
+	/*userUpdate:= structs.Map(user)
 	userId := map[string]interface{}{"UserId": user.UserId}
 	change := bson.M{"$set": userUpdate}
 
 	_, err := client.GetInstance().UpdateOne(ctx, "user", userId, change)
 	if err != nil {
 		return errors.New("Edit User: problem to update into MongoDB")
-	}
+	}*/
 
 	return nil
 }
@@ -127,12 +143,21 @@ func (u *user) DeleteUser(ctx context.Context, id string) error {
 	if userExist.UserId == "" {
 		return errors.New("User Delete: this userId not exists")
 	}
-	userId := map[string]interface{}{"UserId": id}
+
+	userJson, err := json.Marshal(userExist)
+
+	err = kafka.GetInstanceKafka().SendMessage(userJson, "deleteUser")
+	if err != nil {
+		return err
+	}
+
+	/*userId := map[string]interface{}{"UserId": id}
+
 
 	err := client.GetInstance().Remove(ctx, "user", userId)
 	if err != nil {
 		return errors.New("Delete User: problem to delete into MongoDB")
-	}
+	}*/
 
 	return nil
 }

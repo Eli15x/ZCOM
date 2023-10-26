@@ -1,6 +1,7 @@
 package service
 
 import (
+	"os"
 	"encoding/json"
 	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
 	//"go.mongodb.org/mongo-driver/bson"
@@ -10,7 +11,7 @@ import (
 
 
 	"github.com/Eli15x/ZCOM/src/model"
-	//"github.com/Eli15x/ZCOM/src/client"
+	"github.com/Eli15x/ZCOM/src/client"
 	"github.com/Eli15x/ZCOM/src/repository"
 	//"github.com/fatih/structs"
 )
@@ -27,6 +28,7 @@ type ServiceProduct interface {
 	GetProductByName(ctx context.Context, name string) (model.Product,error)
 	GetProducts(ctx context.Context) ([]model.Product, error)
 	DeleteProduct(ctx context.Context, id string) error
+	SaveProduct(ctx context.Context) error
 }
 
 type product struct{}
@@ -44,11 +46,6 @@ func (p *product) CreateProduct(ctx context.Context, product model.Product) erro
 	if productExist.BarCodeNumber != "" {
 		return errors.New("Product: this barcode exists")
 	}
-	
-	//vejo se o kafka roda normalmente e está funcionando.
-	//vejo se o banco está funcionando
-	//se o banco nao estiver funcionando e nem o kafka
-	//neste caso eu mando um erro
 
 	productJson, err := json.Marshal(product)
 
@@ -56,13 +53,6 @@ func (p *product) CreateProduct(ctx context.Context, product model.Product) erro
 	if err != nil {
 		return err
 	}
-
-	/*productInsert := structs.Map(product)
-
-	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
-	if err != nil {
-		return errors.New("Product: problem to insert into MongoDB")
-	}*/
 
 	return nil
 }
@@ -80,15 +70,6 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 	if err != nil {
 		return err
 	}
-	
-	/*productUpdate:= structs.Map(product)
-	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
-	change := bson.M{"$set": productUpdate}
-
-	_, err := client.GetInstance().UpdateOne(ctx, "product", barCode, change)
-	if err != nil {
-		return errors.New("Edit product: problem to update into MongoDB")
-	}*/
 
 	return nil
 }
@@ -96,14 +77,18 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 func (p *product) GetProduct(ctx context.Context, id string) (model.Product, error) {
 	var product model.Product
 
-	//vejo se o banco está funcionando
-	//se o banco nao estiver funcionando 
-	//eu busco no arquivo texto o produto
-
-	barCode := map[string]interface{}{"BarCodeNumber": id}
-	product, err := repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
-	if err != nil {
-		return product, errors.New("Get user: problem to Find Id into MongoDB")
+	if err := client.GetInstance().Initialize(context.Background()); err == nil {
+		barCode := map[string]interface{}{"BarCodeNumber": id}
+		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
+		if err != nil {
+			return product, errors.New("Get user: problem to Find Id into MongoDB")
+		}
+	} else{
+		data, err := os.ReadFile(os.Getenv("SaveProduct"))
+		if err != nil {
+			return product, err
+		}
+		json.Unmarshal([]byte(data), &product)
 	}
 
 	return product, nil
@@ -116,11 +101,6 @@ func (p *product) DeleteProduct(ctx context.Context, id string) error{
 		return errors.New("Delete Product: doesn't have any match for this barCode")
 	}
 
-	//vejo se o kafka roda normalmente e está funcionando.
-	//vejo se o banco está funcionando
-	//se o banco nao estiver funcionando e nem o kafka
-	//neste caso eu mando um erro
-
 	productJson, err := json.Marshal(productExist)
 
 	err = kafka.GetInstanceKafka().SendMessage(productJson, "deleteProduct")
@@ -128,23 +108,18 @@ func (p *product) DeleteProduct(ctx context.Context, id string) error{
 		return err
 	}
 
-	/*barCode := map[string]interface{}{"BarCodeNumber": id}
-
-	err := client.GetInstance().Remove(ctx, "product", barCode)
-	if err != nil {
-		return errors.New("Delete Product: problem to delete into MongoDB")
-	}*/
-
 	return nil
 }
 
 func (p *product) GetProductByName(ctx context.Context, name string) (model.Product,error){
 	var product model.Product
 	Name := map[string]interface{}{"Name": name}
-	product, err := repository.GetInstanceProduct().FindOne(ctx, "product", Name)
-	if err != nil {
-	
-		return product, errors.New("Get product by name: problem to Find name into MongoDB")
+	if err := client.GetInstance().Initialize(context.Background()); err == nil {
+		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", Name)
+		if err != nil {
+		
+			return product, errors.New("Get product by name: problem to Find name into MongoDB")
+		}
 	}
 
 	return product, nil
@@ -153,12 +128,44 @@ func (p *product) GetProductByName(ctx context.Context, name string) (model.Prod
 
 func (p *product) GetProducts(ctx context.Context)([]model.Product, error){
 
+	products := []model.Product{}
 	all := map[string]interface{}{}
 
-	products, err := repository.GetInstanceProduct().Find(ctx, "product", all)
-	if err != nil {
-		return nil, errors.New("Get Products: problem to Find Id into MongoDB")
+	if err := client.GetInstance().Initialize(context.Background()); err == nil {
+		products, err = repository.GetInstanceProduct().Find(ctx, "product", all)
+		if err != nil {
+			return nil, errors.New("Get Products: problem to Find Id into MongoDB")
+		}
+		
 	}
 
 	return products, nil
+}
+
+func (p *product) SaveProduct(ctx context.Context) error{
+
+	products, err := p.GetProducts(ctx)
+	if err != nil {
+		return errors.New("Get Products: problem to Find Id into MongoDB")
+	}
+
+	//remove all files for not be duplicated or for not exists more files that are not related to what have on mongo
+	err = os.RemoveAll(os.Getenv("SaveProduct"))
+    if err != nil {
+        return err
+    }
+
+	for _, product := range products {
+		barCodeNumber := product.BarCodeNumber
+		productJson, err := json.Marshal(product)
+		if err != nil {
+			return err
+		}
+
+		if err = os.WriteFile(os.Getenv("SaveProduct") + "/"+ barCodeNumber, productJson, 0644); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

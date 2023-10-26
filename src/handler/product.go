@@ -244,3 +244,14 @@ func GetProducts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result) //return list
 }
+
+func SaveProduct(c *gin.Context){
+
+	result, err := service.GetInstanceProduct().SaveProduct(context.Background())
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, "ok") //return list
+}

@@ -39,6 +39,7 @@ func main() {
 	defer cancel()
 	//Connection to Mongo
 	if err := client.GetInstance().Initialize(ctx); err != nil {
+		fmt.Errorf("mongo off")
 		bugsnag.Notify(fmt.Errorf("[MONGO DB - ZCOM] Could not resolve Data access layer. Error:"))
 	}
 
@@ -59,6 +60,7 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.POST("/login", handlers.ValidateUser)
+	router.POST("/loginViaCode", handlers.ValidateUserViaCode)
 	router.POST("/cadastro", handlers.CreateUser)
 	router.PUT("/user/edit", handlers.EditUser)
 	router.DELETE("/user/delete", handlers.DeleteUser)
@@ -66,6 +68,7 @@ func main() {
 	router.GET("/user/getByName", handlers.GetUserByName)
 	router.GET("/user/getByAcess", handlers.GetUsersByAcess)
 	router.GET("/users", handlers.GetUsers)
+	router.GET("/user/save", handlers.SaveUser)
 
 
 	router.POST("/product/create", handlers.CreateProduct)
@@ -74,7 +77,7 @@ func main() {
 	router.GET("/product/getAll", handlers.GetProducts)
 	router.PUT("/product/edit", handlers.EditProduct)
 	router.DELETE("/product/delete", handlers.DeleteProduct)
-    //rota para ser acionada para fazer job de rotina para salvar produtos.
+	router.GET("/product/save", handlers.SaveProduct) //rota para salvar produtos
 	
 	//router.POST("/sale/send", handlers.CreateBook)
 	//.POST("/sales/send", handlers.CreateBook)*/

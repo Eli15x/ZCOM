@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	//"go.mongodb.org/mongo-driver/mongo/readpref"
-	"github.com/labstack/gommon/log"
+	//"github.com/labstack/gommon/log"
 )
 
 
@@ -59,7 +59,7 @@ func (m *mongodbImpl) Initialize(ctx context.Context) error {
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	m.dbName = os.Getenv("DBName")

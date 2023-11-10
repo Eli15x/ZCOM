@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"os"
 	"encoding/json"
 	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
@@ -77,19 +78,21 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 func (p *product) GetProduct(ctx context.Context, id string) (model.Product, error) {
 	var product model.Product
 
-	if err := client.GetInstance().Initialize(context.Background()); err == nil {
+	/*if err := client.GetInstance().Initialize(context.Background()); err == nil {
+		fmt.Println("entrou")
 		barCode := map[string]interface{}{"BarCodeNumber": id}
 		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
 		if err != nil {
 			return product, errors.New("Get user: problem to Find Id into MongoDB")
 		}
-	} else{
-		data, err := os.ReadFile(os.Getenv("SaveProduct"))
+	} else*/
+		namefile := id + ".txt" 
+		data, err := os.ReadFile(os.Getenv("SaveProduct")+ namefile )
 		if err != nil {
 			return product, err
 		}
 		json.Unmarshal([]byte(data), &product)
-	}
+	
 
 	return product, nil
 }
@@ -155,6 +158,11 @@ func (p *product) SaveProduct(ctx context.Context) error{
         return err
     }
 
+	err = os.Mkdir(os.Getenv("SaveProduct"), 0755) //create a directory and give it required permissions
+	if err != nil {
+	   return err
+	}
+
 	for _, product := range products {
 		barCodeNumber := product.BarCodeNumber
 		productJson, err := json.Marshal(product)
@@ -162,7 +170,9 @@ func (p *product) SaveProduct(ctx context.Context) error{
 			return err
 		}
 
-		if err = os.WriteFile(os.Getenv("SaveProduct") + "/"+ barCodeNumber, productJson, 0644); err != nil {
+		namefile := barCodeNumber + ".txt" 
+	
+		if err = os.WriteFile(os.Getenv("SaveProduct") + namefile , productJson, 0666); err != nil {
 			return err
 		}
 	}

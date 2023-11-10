@@ -247,7 +247,7 @@ func GetProducts(c *gin.Context) {
 
 func SaveProduct(c *gin.Context){
 
-	result, err := service.GetInstanceProduct().SaveProduct(context.Background())
+	err := service.GetInstanceProduct().SaveProduct(context.Background())
 	if err != nil {
 		c.String(400, err.Error())
 		return

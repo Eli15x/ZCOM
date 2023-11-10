@@ -60,7 +60,7 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.POST("/login", handlers.ValidateUser)
-	router.POST("/loginViaCode", handlers.ValidateUserViaCode)
+	//router.POST("/loginViaCode", handlers.ValidateUserViaCode)
 	router.POST("/cadastro", handlers.CreateUser)
 	router.PUT("/user/edit", handlers.EditUser)
 	router.DELETE("/user/delete", handlers.DeleteUser)
@@ -68,7 +68,7 @@ func main() {
 	router.GET("/user/getByName", handlers.GetUserByName)
 	router.GET("/user/getByAcess", handlers.GetUsersByAcess)
 	router.GET("/users", handlers.GetUsers)
-	router.GET("/user/save", handlers.SaveUser)
+	//router.GET("/user/save", handlers.SaveUser) 
 
 
 	router.POST("/product/create", handlers.CreateProduct)

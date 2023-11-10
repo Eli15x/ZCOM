@@ -151,14 +151,6 @@ func (u *user) DeleteUser(ctx context.Context, id string) error {
 		return err
 	}
 
-	/*userId := map[string]interface{}{"UserId": id}
-
-
-	err := client.GetInstance().Remove(ctx, "user", userId)
-	if err != nil {
-		return errors.New("Delete User: problem to delete into MongoDB")
-	}*/
-
 	return nil
 }
 
@@ -210,3 +202,4 @@ func (u *user) GetUsers(ctx context.Context) ([]model.User, error){
 
 	return users, nil
 }
+

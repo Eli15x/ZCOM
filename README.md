@@ -27,3 +27,47 @@ no terminal rode o seguinte comando
 Na pasta ZCOM/consumer, onde iniciará o Consumidor das mensagens kafka
 no terminal rode o seguinte comando:
     go run main.go
+
+
+
+Pegar usuarios somente com id 1, nao sao administradores para salvar com senha criptografada na pasta user.
+
+
+Criar Nova tabela para forma de pagamento:
+
+{
+    formaDePagamento:,
+    codigoDePagamento:,
+}
+
+Criar rota atualizar quantias.
+{
+    "idUser": "xxx-yyy-zzz",
+    "codigoPagamento": ,
+    "qtdProdutos":,
+    "valorTotal": "",
+    "pagamentos":{
+        {
+            "valor": x,
+            "formaPagamento": ,
+        },
+        {
+
+        }
+
+    }
+
+    {
+        "bar-code-number": "111-222-333",
+        "qtd":2,
+    },
+
+    {
+
+    },
+
+    {
+
+    }
+
+}

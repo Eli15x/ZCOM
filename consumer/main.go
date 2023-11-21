@@ -33,7 +33,7 @@ func main() {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"createUser", "^aRegex.*[Tt]opic"}, nil)
+	c.SubscribeTopics([]string{"createUser", "editUser", "deleteUser", "createProduct","editProduct", "deleteProduct" ,"^aRegex.*[Tt]opic"}, nil)
 	run := true
 
 	for run {

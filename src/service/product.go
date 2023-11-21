@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	//"fmt"
 	"os"
 	"encoding/json"
 	kafka "github.com/Eli15x/ZCOM/src/client/kafka"

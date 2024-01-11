@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/Eli15x/ZCOM/src/model"
+	"ZCOM/src/model"
 	"encoding/json"
 	"context"
 	"github.com/pkg/errors"
 	"fmt"
 	"time"
 
-	"github.com/Eli15x/ZCOM/src/client"
+	"ZCOM/src/client"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/fatih/structs"
 	"go.mongodb.org/mongo-driver/bson"

@@ -6,8 +6,8 @@ import (
 	"sync"
 	"fmt"
 
-	"github.com/Eli15x/ZCOM/src/model"
-	"github.com/Eli15x/ZCOM/src/client"
+	"ZCOM/src/model"
+	"ZCOM/src/client"
 )
 
 var (

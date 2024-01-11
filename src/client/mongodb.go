@@ -30,6 +30,7 @@ type MongoDB interface {
 	Remove(ctx context.Context, collName string, query map[string]interface{}) error
 	WithTransaction(ctx context.Context, fn func(context.Context) error) error
 	Initialize(ctx context.Context) error
+	Ping(ctx context.Context) error
 	Disconnect()
 }
 
@@ -90,6 +91,16 @@ func (m *mongodbImpl) Insert(ctx context.Context, collName string, doc interface
 		return nil, err
 	}
 	return insertedObject.InsertedID, err
+}
+
+func (m *mongodbImpl) Ping(ctx context.Context) error{
+
+	err := m.client.Ping(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Find finds all documents in the collection

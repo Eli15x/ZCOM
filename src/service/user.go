@@ -2,19 +2,20 @@ package service
 
 import (
 	"encoding/json"
-	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
+	kafka "ZCOM/src/client/kafka"
+	"ZCOM/src/client"
 	//"go.mongodb.org/mongo-driver/bson"
 	"strings"
+	"os"
 	"context"
 	"errors"
 	"sync"
-	"fmt"
+	//"fmt"
 
 
-	"github.com/Eli15x/ZCOM/src/model"
-	//"github.com/Eli15x/ZCOM/src/client"
-	"github.com/Eli15x/ZCOM/src/repository"
-	"github.com/Eli15x/ZCOM/src/utils"
+	"ZCOM/src/model"
+	"ZCOM/src/repository"
+	"ZCOM/src/utils"
 	//"github.com/fatih/structs"
 )
 
@@ -33,6 +34,7 @@ type ServiceUser interface {
 	GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error)
 	GetUsers(ctx context.Context) ([]model.User, error)
 	DeleteUser(ctx context.Context, id string) error
+	SaveUser(ctx context.Context) error
 }
 
 type user struct{}
@@ -46,17 +48,31 @@ func GetInstanceUser() ServiceUser {
 
 func (u *user) ValidateUser(ctx context.Context, email string, password string) (string, error) {
 	
-	emailValidate := map[string]interface{}{"Email": email}
-	user, err := repository.GetInstanceUser().FindOne(ctx, "user", emailValidate)
-	if err != nil {
-		return "",errors.New("Validate user: problem to get information into MongoDB")
+	var user model.User
+	err := client.GetInstance().Ping(context.Background());
+
+	if err == nil {
+		emailValidate := map[string]interface{}{"Email": email}
+		user, err = repository.GetInstanceUser().FindOne(ctx, "user", emailValidate)
+		if err != nil {
+			return "",errors.New("Validate user: problem to get information into MongoDB")
+		}
+
+	} else {
+		namefile := email + ".txt" 
+		data, err := os.ReadFile(os.Getenv("SaveUser")+ namefile )
+		if data == nil {
+			return "", errors.New("Validate user: User with email doesn't exist")
+		}
+		if err != nil {
+			return "", errors.New("Validate user: User with email doesn't exist")
+		}
+		json.Unmarshal([]byte(data), &user)
+
 	}
 
-
-	fmt.Println(user)
 	passwordEncrypt := utils.Encrypt(password)
-	fmt.Println(passwordEncrypt)
-	fmt.Println(user.PassWord)
+
 	if strings.Compare(passwordEncrypt, user.PassWord) != 0 {
 		return "", errors.New("Password user: wrong password")
 	}
@@ -201,5 +217,42 @@ func (u *user) GetUsers(ctx context.Context) ([]model.User, error){
 	}
 
 	return users, nil
+}
+
+
+
+func (u *user) SaveUser(ctx context.Context) error {
+	users, err := u.GetUsersByAcess(ctx, 1)
+	if err != nil {
+		return errors.New("Get Users: problem to Find users by acess into MongoDB")
+	}
+
+	//remove all files for not be duplicated or for not exists more files that are not related to what have on mongo
+	err = os.RemoveAll(os.Getenv("SaveUser"))
+    if err != nil {
+        return err
+    }
+
+	err = os.Mkdir(os.Getenv("SaveUser"), 0755) //create a directory and give it required permissions
+	if err != nil {
+	   return err
+	}
+
+	for _, user := range users {
+		email := user.Email
+		userJson, err := json.Marshal(user)
+		if err != nil {
+			return err
+		}
+
+		namefile := email + ".txt" 
+	
+		if err = os.WriteFile(os.Getenv("SaveUser") + namefile , userJson, 0666); err != nil {
+			return err
+		}
+	}
+
+	return nil
+
 }
 

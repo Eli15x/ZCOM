@@ -1,7 +1,7 @@
 package main
 
 import (
-	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
+	kafka "ZCOM/src/client/kafka"
 	//"time"
 	//"context"
 
@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/Eli15x/ZCOM/src/client"
-	"github.com/Eli15x/ZCOM/src/handler"
+	"ZCOM/src/client"
+	"ZCOM/src/handler"
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -68,7 +68,7 @@ func main() {
 	router.GET("/user/getByName", handlers.GetUserByName)
 	router.GET("/user/getByAcess", handlers.GetUsersByAcess)
 	router.GET("/users", handlers.GetUsers)
-	//router.GET("/user/save", handlers.SaveUser) 
+	router.GET("/user/save", handlers.SaveUser) 
 
 
 	router.POST("/product/create", handlers.CreateProduct)

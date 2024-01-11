@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	"net/http"
-	"github.com/Eli15x/ZCOM/src/service"
-	"github.com/Eli15x/ZCOM/src/model"
+	"ZCOM/src/service"
+	"ZCOM/src/model"
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 )

@@ -1,19 +1,19 @@
 package service
 
 import (
-	//"fmt"
+	"fmt"
 	"os"
 	"encoding/json"
-	kafka "github.com/Eli15x/ZCOM/src/client/kafka"
+	kafka "ZCOM/src/client/kafka"
 	//"go.mongodb.org/mongo-driver/bson"
 	"context"
 	"errors"
 	"sync"
 
 
-	"github.com/Eli15x/ZCOM/src/model"
-	"github.com/Eli15x/ZCOM/src/client"
-	"github.com/Eli15x/ZCOM/src/repository"
+	"ZCOM/src/model"
+	"ZCOM/src/client"
+	"ZCOM/src/repository"
 	//"github.com/fatih/structs"
 )
 
@@ -78,20 +78,22 @@ func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 func (p *product) GetProduct(ctx context.Context, id string) (model.Product, error) {
 	var product model.Product
 
-	/*if err := client.GetInstance().Initialize(context.Background()); err == nil {
-		fmt.Println("entrou")
+	if err := client.GetInstance().Ping(context.Background()); err == nil {
 		barCode := map[string]interface{}{"BarCodeNumber": id}
-		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
+		product, err = repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
 		if err != nil {
 			return product, errors.New("Get user: problem to Find Id into MongoDB")
 		}
-	} else*/
+	} else{
+
 		namefile := id + ".txt" 
-		data, err := os.ReadFile(os.Getenv("SaveProduct")+ namefile )
+		data, err := os.ReadFile(os.Getenv("SaveProduct") + namefile)
 		if err != nil {
 			return product, err
 		}
 		json.Unmarshal([]byte(data), &product)
+
+	}
 	
 
 	return product, nil

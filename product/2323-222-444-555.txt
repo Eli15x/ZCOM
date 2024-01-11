@@ -1,0 +1,1 @@
+{"barCodeNumber":"2323-222-444-555","name":"pasta de dente oral b","ncm":"1122","cfop":"11","indRegra":"33","uCom":1,"qCom":1,"vUnCom":8,"imposto":{"imposto1":"teste","imposto2":"teste"}}

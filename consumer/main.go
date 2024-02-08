@@ -3,16 +3,14 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"ZCOM/src/model"
+	"ZCOM/src/service"
 	"encoding/json"
 	"context"
-	"github.com/pkg/errors"
 	"fmt"
 	"time"
 
 	"ZCOM/src/client"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	"github.com/fatih/structs"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
@@ -49,44 +47,44 @@ func main() {
 				case "createUser":	
 					var result model.User
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := createUser(context.Background(), result)
+					err := service.GetInstanceUser().CreateUser(context.Background(), result)
 					if err != nil {
 						fmt.Println("Create user: problem to insert into MongoDB")
 					}
 				case "editUser":
 					var result model.User
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := editUser(context.Background(), result)
+					err := service.GetInstanceUser().EditUser(context.Background(), result)
 					if err != nil {
 						fmt.Println("Create user: problem to insert into MongoDB")
 					}
 				case "deleteUser":
 					var result model.User
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := deleteUser(context.Background(), result)
+					err := service.GetInstanceUser().DeleteUser(context.Background(), result)
 					if err != nil {
 						fmt.Println("Create user: problem to insert into MongoDB")
 					}
 				case "createProduct":
 					var result model.Product
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := createProduct(context.Background(), result)
+					err := service.GetInstanceProduct().CreateProduct(context.Background(), result)
 					if err != nil {
-						fmt.Println("Create user: problem to insert into MongoDB")
+						fmt.Println("Create Product: problem to insert into MongoDB")
 					}
 				case "editProduct":
 					var result model.Product
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := editProduct(context.Background(), result)
+					err := service.GetInstanceProduct().EditProduct(context.Background(), result)
 					if err != nil {
-						fmt.Println("Create user: problem to insert into MongoDB")
+						fmt.Println("Create Product: problem to insert into MongoDB")
 					}
 				case "deleteProduct":
 					var result model.Product
 					json.Unmarshal([]byte(msg.Value), &result)
-					err := deleteProduct(context.Background(), result)
+					err := service.GetInstanceProduct().DeleteProduct(context.Background(), result)
 					if err != nil {
-						fmt.Println("Create user: problem to insert into MongoDB")
+						fmt.Println("Create Product: problem to insert into MongoDB")
 					}
 				default:
 					// freebsd, openbsd,
@@ -103,73 +101,3 @@ func main() {
 	c.Close()
 }
 
-
-func createUser(ctx context.Context,user model.User) error{
-	userInsert:= structs.Map(user)
-	_, err := client.GetInstance().Insert(ctx, "user", userInsert)
-	if err != nil {
-		return errors.New("Create user: problem to insert into MongoDB")
-	}
-	return nil
-}
-
-func editUser(ctx context.Context,user model.User) error {
-	userUpdate:= structs.Map(user)
-	userId := map[string]interface{}{"UserId": user.UserId}
-	change := bson.M{"$set": userUpdate}
-
-	_, err := client.GetInstance().UpdateOne(ctx, "user", userId, change)
-	if err != nil {
-		return errors.New("Edit User: problem to update into MongoDB")
-	}
-	return nil
-}
-
-func deleteUser(ctx context.Context,user model.User) error {
-	//casos de duplicidade ajustar
-	userId := map[string]interface{}{"UserId": user.UserId}
-
-	err := client.GetInstance().Remove(ctx, "user", userId)
-	if err != nil {
-		return errors.New("Delete User: problem to delete into MongoDB")
-	}
-
-	return nil
-}
-
-func createProduct(ctx context.Context,product model.Product) error {
-	//casos de duplicidade ajustar
-	productInsert := structs.Map(product)
-
-	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
-	if err != nil {
-		return errors.New("Product: problem to insert into MongoDB")
-	}
-
-	return nil
-}
-
-func editProduct(ctx context.Context,product model.Product) error {
-	//casos de duplicidade ajustar
-	productUpdate:= structs.Map(product)
-	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
-	change := bson.M{"$set": productUpdate}
-
-	_, err := client.GetInstance().UpdateOne(ctx, "product", CODIGO_CEST, change)
-	if err != nil {
-		return errors.New("Edit product: problem to update into MongoDB")
-	}
-	return nil
-}
-
-func deleteProduct(ctx context.Context,product model.Product) error {
-	//casos de duplicidade ajustar
-	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
-
-	err := client.GetInstance().Remove(ctx, "product", CODIGO_CEST)
-	if err != nil {
-		return errors.New("Delete Product: problem to delete into MongoDB")
-	}
-
-	return nil
-}

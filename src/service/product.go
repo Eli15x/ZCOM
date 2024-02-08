@@ -9,7 +9,8 @@ import (
 	"errors"
 	"sync"
 
-
+	"github.com/fatih/structs"
+	"go.mongodb.org/mongo-driver/bson"
 	"ZCOM/src/model"
 	"ZCOM/src/client"
 	"ZCOM/src/repository"
@@ -22,13 +23,17 @@ var (
 )
 
 type ServiceProduct interface {
-	CreateProduct(ctx context.Context, product model.Product) error
-	EditProduct(ctx context.Context, product model.Product) error
+	CreateProductKafka(ctx context.Context, product model.Product) error
+	EditProductKafka(ctx context.Context, product model.Product) error
 	GetProduct(ctx context.Context, id string) (model.Product, error)
 	GetProductByName(ctx context.Context, name string) (model.Product,error)
 	GetProducts(ctx context.Context) ([]model.Product, error)
-	DeleteProduct(ctx context.Context, id string) error
+	DeleteProductKafka(ctx context.Context, id string) error
 	SaveProduct(ctx context.Context) error
+
+	CreateProduct(ctx context.Context, product model.Product) error
+	EditProduct(ctx context.Context, product model.Product) error
+	DeleteProduct(ctx context.Context,product model.Product) error
 }
 
 type product struct{}
@@ -40,7 +45,7 @@ func GetInstanceProduct() ServiceProduct {
 	return instanceServiceProduct
 }
 
-func (p *product) CreateProduct(ctx context.Context, product model.Product) error {
+func (p *product) CreateProductKafka(ctx context.Context, product model.Product) error {
 
 	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
 	if productExist.CODIGO_CEST != "" {
@@ -57,7 +62,7 @@ func (p *product) CreateProduct(ctx context.Context, product model.Product) erro
 	return nil
 }
 
-func (p *product) EditProduct(ctx context.Context, product model.Product) error{
+func (p *product) EditProductKafka(ctx context.Context, product model.Product) error{
 
 	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
 	if productExist.CODIGO_CEST == "" {
@@ -98,7 +103,7 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 	return product, nil
 }
 
-func (p *product) DeleteProduct(ctx context.Context, id string) error{
+func (p *product) DeleteProductKafka(ctx context.Context, id string) error{
 
 	productExist, _ := p.GetProduct(ctx, id)
 	if productExist.CODIGO_CEST == "" {
@@ -176,6 +181,43 @@ func (p *product) SaveProduct(ctx context.Context) error{
 		if err = os.WriteFile(os.Getenv("SaveProduct") + namefile , productJson, 0666); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (p *product) CreateProduct(ctx context.Context,product model.Product) error {
+	//casos de duplicidade ajustar
+	productInsert := structs.Map(product)
+
+	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
+	if err != nil {
+		return errors.New("Product: problem to insert into MongoDB")
+	}
+
+	return nil
+}
+
+func (p *product) EditProduct(ctx context.Context,product model.Product) error {
+	//casos de duplicidade ajustar
+	productUpdate:= structs.Map(product)
+	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
+	change := bson.M{"$set": productUpdate}
+
+	_, err := client.GetInstance().UpdateOne(ctx, "product", CODIGO_CEST, change)
+	if err != nil {
+		return errors.New("Edit product: problem to update into MongoDB")
+	}
+	return nil
+}
+
+func (p *product) DeleteProduct(ctx context.Context,product model.Product) error {
+	//casos de duplicidade ajustar
+	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
+
+	err := client.GetInstance().Remove(ctx, "product", CODIGO_CEST)
+	if err != nil {
+		return errors.New("Delete Product: problem to delete into MongoDB")
 	}
 
 	return nil

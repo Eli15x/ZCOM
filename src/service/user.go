@@ -16,7 +16,8 @@ import (
 	"ZCOM/src/model"
 	"ZCOM/src/repository"
 	"ZCOM/src/utils"
-	//"github.com/fatih/structs"
+	"github.com/fatih/structs"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -26,15 +27,19 @@ var (
 
 type ServiceUser interface {
 	ValidateUser(ctx context.Context, email string, password string) (string, error)
-	CreateUser(ctx context.Context, user model.UserRequest) error
-	EditUser(ctx context.Context, user model.User) error
+	CreateUserKafka(ctx context.Context, user model.UserRequest) error
+	EditUserKafka(ctx context.Context, user model.User) error
 	GetUser(ctx context.Context, id string) (model.User, error)
 	GetUserByName(ctx context.Context, name string) (model.User,error)
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 	GetUsersByAcess(ctx context.Context, idAcess int) ([]model.User, error)
 	GetUsers(ctx context.Context) ([]model.User, error)
-	DeleteUser(ctx context.Context, id string) error
+	DeleteUserKafka(ctx context.Context, id string) error
 	SaveUser(ctx context.Context) error
+
+	CreateUser(ctx context.Context,user model.User) error
+	EditUser(ctx context.Context, user model.User) error
+	DeleteUser(ctx context.Context, user model.User) error
 }
 
 type user struct{}
@@ -80,7 +85,7 @@ func (u *user) ValidateUser(ctx context.Context, email string, password string) 
 	return user.UserId,nil
 }
 
-func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
+func (u *user) CreateUserKafka(ctx context.Context, user model.UserRequest) error {
 
 	userExist, _ := u.GetUserByEmail(ctx, user.Email)
 	if userExist.UserId != "" {
@@ -115,7 +120,7 @@ func (u *user) CreateUser(ctx context.Context, user model.UserRequest) error {
 	return nil
 }
 
-func (u *user) EditUser(ctx context.Context, user model.User) error {
+func (u *user) EditUserKafka(ctx context.Context, user model.User) error {
 
 	userExist, _ := u.GetUser(ctx, user.UserId)
 	if userExist.UserId == "" {
@@ -153,7 +158,7 @@ func (u *user) GetUser(ctx context.Context, id string) (model.User, error) {
 	return user, nil
 }
 
-func (u *user) DeleteUser(ctx context.Context, id string) error {
+func (u *user) DeleteUserKafka(ctx context.Context, id string) error {
 
 	userExist, _ := u.GetUser(ctx, id)
 	if userExist.UserId == "" {
@@ -256,3 +261,35 @@ func (u *user) SaveUser(ctx context.Context) error {
 
 }
 
+func (u *user) CreateUser(ctx context.Context,user model.User) error{
+	userInsert:= structs.Map(user)
+	_, err := client.GetInstance().Insert(ctx, "user", userInsert)
+	if err != nil {
+		return errors.New("Create user: problem to insert into MongoDB")
+	}
+	return nil
+}
+
+func (u *user) EditUser(ctx context.Context,user model.User) error {
+	userUpdate:= structs.Map(user)
+	userId := map[string]interface{}{"UserId": user.UserId}
+	change := bson.M{"$set": userUpdate}
+
+	_, err := client.GetInstance().UpdateOne(ctx, "user", userId, change)
+	if err != nil {
+		return errors.New("Edit User: problem to update into MongoDB")
+	}
+	return nil
+}
+
+func (u *user) DeleteUser(ctx context.Context,user model.User) error {
+	//casos de duplicidade ajustar
+	userId := map[string]interface{}{"UserId": user.UserId}
+
+	err := client.GetInstance().Remove(ctx, "user", userId)
+	if err != nil {
+		return errors.New("Delete User: problem to delete into MongoDB")
+	}
+
+	return nil
+}

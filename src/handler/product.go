@@ -126,7 +126,7 @@ func CreateProduct(c *gin.Context) {
 	}*/
 
 
-	err = service.GetInstanceProduct().CreateProduct(context.Background(), product)
+	err = service.GetInstanceProduct().CreateProductKafka(context.Background(), product)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -250,7 +250,7 @@ func EditProduct(c *gin.Context) {
 		return
 	}*/
 
-	err = service.GetInstanceProduct().EditProduct(context.Background(), product)
+	err = service.GetInstanceProduct().EditProductKafka(context.Background(), product)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -274,7 +274,7 @@ func DeleteProduct(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceProduct().DeleteProduct(context.Background(), product.CODIGO_CEST)
+	err = service.GetInstanceProduct().DeleteProductKafka(context.Background(), product.CODIGO_CEST)
 	if err != nil {
 		c.String(400, err.Error())
 		return

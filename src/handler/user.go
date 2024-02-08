@@ -72,7 +72,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceUser().CreateUser(context.Background(), user)
+	err = service.GetInstanceUser().CreateUserKafka(context.Background(), user)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -112,7 +112,7 @@ func EditUser(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceUser().EditUser(context.Background(), user)
+	err = service.GetInstanceUser().EditUserKafka(context.Background(), user)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -136,7 +136,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err = service.GetInstanceUser().DeleteUser(context.Background(), user.UserId)
+	err = service.GetInstanceUser().DeleteUserKafka(context.Background(), user.UserId)
 	if err != nil {
 		c.String(400, err.Error())
 		return

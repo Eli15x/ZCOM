@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"os"
 	"encoding/json"
 	kafka "ZCOM/src/client/kafka"
@@ -43,8 +42,8 @@ func GetInstanceProduct() ServiceProduct {
 
 func (p *product) CreateProduct(ctx context.Context, product model.Product) error {
 
-	productExist, _ := p.GetProduct(ctx, product.BarCodeNumber)
-	if productExist.BarCodeNumber != "" {
+	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
+	if productExist.CODIGO_CEST != "" {
 		return errors.New("Product: this barcode exists")
 	}
 
@@ -60,9 +59,9 @@ func (p *product) CreateProduct(ctx context.Context, product model.Product) erro
 
 func (p *product) EditProduct(ctx context.Context, product model.Product) error{
 
-	productExist, _ := p.GetProduct(ctx, product.BarCodeNumber)
-	if productExist.BarCodeNumber == "" {
-		return errors.New("Edit Product: doesn't have any match for this barCode")
+	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
+	if productExist.CODIGO_CEST == "" {
+		return errors.New("Edit Product: doesn't have any match for this CODIGO CEST")
 	}
 
 	productJson, err := json.Marshal(product) 
@@ -79,8 +78,8 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 	var product model.Product
 
 	if err := client.GetInstance().Ping(context.Background()); err == nil {
-		barCode := map[string]interface{}{"BarCodeNumber": id}
-		product, err = repository.GetInstanceProduct().FindOne(ctx, "product", barCode)
+		CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": id}
+		product, err = repository.GetInstanceProduct().FindOne(ctx, "product", CODIGO_CEST)
 		if err != nil {
 			return product, errors.New("Get user: problem to Find Id into MongoDB")
 		}
@@ -102,8 +101,8 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 func (p *product) DeleteProduct(ctx context.Context, id string) error{
 
 	productExist, _ := p.GetProduct(ctx, id)
-	if productExist.BarCodeNumber == "" {
-		return errors.New("Delete Product: doesn't have any match for this barCode")
+	if productExist.CODIGO_CEST == "" {
+		return errors.New("Delete Product: doesn't have any match for this CODIGO sCEST")
 	}
 
 	productJson, err := json.Marshal(productExist)
@@ -118,7 +117,7 @@ func (p *product) DeleteProduct(ctx context.Context, id string) error{
 
 func (p *product) GetProductByName(ctx context.Context, name string) (model.Product,error){
 	var product model.Product
-	Name := map[string]interface{}{"Name": name}
+	Name := map[string]interface{}{"NAME": name}
 	if err := client.GetInstance().Initialize(context.Background()); err == nil {
 		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", Name)
 		if err != nil {
@@ -166,7 +165,7 @@ func (p *product) SaveProduct(ctx context.Context) error{
 	}
 
 	for _, product := range products {
-		barCodeNumber := product.BarCodeNumber
+		barCodeNumber := product.CODIGO_CEST
 		productJson, err := json.Marshal(product)
 		if err != nil {
 			return err

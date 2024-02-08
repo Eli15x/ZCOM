@@ -1,9 +1,14 @@
 package model
 
-type Payment struct {
+type Sale struct {
+	SaleId             string    `json:"saleId,omitempty" bson:"saleId,omitempty"`
 	UserId             string    `json:"userId,omitempty" bson:"UserId,omitempty"`
-	Name               string    `json:"name,omitempty" bson:"Name,omitempty"`
-	Email              string    `json:"email,omitempty" bson:"Email,omitempty"`
-	PassWord           string    `json:"passWord,omitempty" bson:"PassWord,omitempty"`
-	IdAcess     	   int       `json:"idAcess,omitempty" bson:"IdAcess,omitempty"`
+    Payments 	   	   []Payment `json:"payments,omitempty" bson:"payments,omitempty"`
+	Products           []Product `json:"products,omitempty" bson:"products,omitempty"`
 }
+
+type Payment struct {
+	Value        string   `json:"value,omitempty" bson:"value,omitempty"`
+	TypePayment  string   `json:"typePayment,omitempty" bson:"typePayment,omitempty"`
+}
+

@@ -152,10 +152,10 @@ func createProduct(ctx context.Context,product model.Product) error {
 func editProduct(ctx context.Context,product model.Product) error {
 	//casos de duplicidade ajustar
 	productUpdate:= structs.Map(product)
-	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
+	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
 	change := bson.M{"$set": productUpdate}
 
-	_, err := client.GetInstance().UpdateOne(ctx, "product", barCode, change)
+	_, err := client.GetInstance().UpdateOne(ctx, "product", CODIGO_CEST, change)
 	if err != nil {
 		return errors.New("Edit product: problem to update into MongoDB")
 	}
@@ -164,9 +164,9 @@ func editProduct(ctx context.Context,product model.Product) error {
 
 func deleteProduct(ctx context.Context,product model.Product) error {
 	//casos de duplicidade ajustar
-	barCode := map[string]interface{}{"BarCodeNumber": product.BarCodeNumber}
+	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
 
-	err := client.GetInstance().Remove(ctx, "product", barCode)
+	err := client.GetInstance().Remove(ctx, "product", CODIGO_CEST)
 	if err != nil {
 		return errors.New("Delete Product: problem to delete into MongoDB")
 	}

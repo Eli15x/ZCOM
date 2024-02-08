@@ -21,17 +21,17 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	if product.BarCodeNumber == "" {
+	if product.CODIGO_CEST == "" {
 		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
 		return
 	}
 
-	if product.Name == "" {
+	if product.NAME == "" {
 		c.String(400, "Create Product Error: Name not informed")
 		return
 	}
 
-	if product.NCM == "" {
+	if product.CODIGO_NCM == "" {
 		c.String(400, "Create Product Error: NCM not informed")
 		return
 	}
@@ -40,6 +40,57 @@ func CreateProduct(c *gin.Context) {
 		c.String(400, "Create Product Error: CFOP not informed")
 		return
 	}
+
+	if product.GTIN == "" {
+		c.String(400, "Create Product Error: GTIN not informed")
+		return
+	}
+
+	if product.IAT == "" {
+		c.String(400, "Create Product Error: IAT not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_GRUPO == 0 {
+		c.String(400, "Create Product Error: ID_PRODUTO_GRUPO not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_MARCA == 0 {
+		c.String(400, "Create Product Error: ID_PRODUTO_MARCA not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_UNIDADE == 0 {
+		c.String(400, "Create Product Error: ID_PRODUTO_UNIDADE not informed")
+		return
+	}
+
+	if product.ID_TRIBUT_GRUPO_TRIBUTARIO == 0 {
+		c.String(400, "Create Product Error: ID_TRIBUT_GRUPO_TRIBUTARIO not informed")
+		return
+	}
+
+	if product.IPPT == "" {
+		c.String(400, "Create Product Error: IPPT not informed")
+		return
+	}
+
+	if product.PESO == 0 {
+		c.String(400, "Create Product Error: PESO not informed")
+		return
+	}
+
+	if product.QUANTIDADE_EMBALAGEM == 0 {
+		c.String(400, "Create Product Error: QUANTIDADE_EMBALAGEM not informed")
+		return
+	}
+
+	if product.QUANTIDADE_ESTOQUE == 0 {
+		c.String(400, "Create Product Error: QUANTIDADE_ESTOQUE not informed")
+		return
+	}
+
 
 	/*if product.Desconto == 0 {
 		c.String(400, "Create Product Error: Desconto not informed")
@@ -53,7 +104,7 @@ func CreateProduct(c *gin.Context) {
 	}*/
 
 
-	if product.IndRegra == "" {
+	/*if product.IndRegra == "" {
 		c.String(400, "Create Product Error: IndRegra not informed")
 		return
 	}
@@ -72,7 +123,7 @@ func CreateProduct(c *gin.Context) {
 	if product.VUnCom == 0 {
 		c.String(400, "Create Product Error: VUnCom not informed")
 		return
-	}
+	}*/
 
 
 	err = service.GetInstanceProduct().CreateProduct(context.Background(), product)
@@ -94,58 +145,110 @@ func EditProduct(c *gin.Context) {
 		return
 	}
 
-	if product.BarCodeNumber == "" {
-		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
+	
+	if product.CODIGO_CEST == "" {
+		c.String(http.StatusBadRequest, "Edit Product Error: barCode not informed")
 		return
 	}
 
-	if product.Name == "" {
-		c.String(400, "Create Product Error: Name not informed")
+	if product.NAME == "" {
+		c.String(400, "Edit Product Error: Name not informed")
 		return
 	}
 
-	if product.NCM == "" {
-		c.String(400, "Create Product Error: NCM not informed")
+	if product.CODIGO_NCM == "" {
+		c.String(400, "Edit Product Error: NCM not informed")
 		return
 	}
 
 	if product.CFOP == "" {
-		c.String(400, "Create Product Error: CFOP not informed")
+		c.String(400, "Edit Product Error: CFOP not informed")
 		return
 	}
 
+	if product.GTIN == "" {
+		c.String(400, "Edit Product Error: GTIN not informed")
+		return
+	}
+
+	if product.IAT == "" {
+		c.String(400, "Edit Product Error: IAT not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_GRUPO == 0 {
+		c.String(400, "Edit Product Error: ID_PRODUTO_GRUPO not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_MARCA == 0 {
+		c.String(400, "Edit Product Error: ID_PRODUTO_MARCA not informed")
+		return
+	}
+
+	if product.ID_PRODUTO_UNIDADE == 0 {
+		c.String(400, "Edit Product Error: ID_PRODUTO_UNIDADE not informed")
+		return
+	}
+
+	if product.ID_TRIBUT_GRUPO_TRIBUTARIO == 0 {
+		c.String(400, "Edit Product Error: ID_TRIBUT_GRUPO_TRIBUTARIO not informed")
+		return
+	}
+
+	if product.IPPT == "" {
+		c.String(400, "Edit Product Error: IPPT not informed")
+		return
+	}
+
+	if product.PESO == 0 {
+		c.String(400, "Edit Product Error: PESO not informed")
+		return
+	}
+
+	if product.QUANTIDADE_EMBALAGEM == 0 {
+		c.String(400, "Edit Product Error: QUANTIDADE_EMBALAGEM not informed")
+		return
+	}
+
+	if product.QUANTIDADE_ESTOQUE == 0 {
+		c.String(400, "Edit Product Error: QUANTIDADE_ESTOQUE not informed")
+		return
+	}
+
+
 	/*if product.Desconto == 0 {
-		c.String(400, "Create Product Error: Desconto not informed")
+		c.String(400, "Edit Product Error: Desconto not informed")
 		return
 	}
 
 
 	if product.OutrosDesconto == 0 {
-		c.String(400, "Create Product Error: OutrosDesconto not informed")
+		c.String(400, "Edit Product Error: OutrosDesconto not informed")
 		return
 	}*/
 
 
-	if product.IndRegra == "" {
-		c.String(400, "Create Product Error: IndRegra not informed")
+	/*if product.IndRegra == "" {
+		c.String(400, "Edit Product Error: IndRegra not informed")
 		return
 	}
 
 
 	if product.UCom == 0 {
-		c.String(400, "Create Product Error: UCom not informed")
+		c.String(400, "Edit Product Error: UCom not informed")
 		return
 	}
 
 	if product.QCom == 0 {
-		c.String(400, "Create Product Error: QCom not informed")
+		c.String(400, "Edit Product Error: QCom not informed")
 		return
 	}
 
 	if product.VUnCom == 0 {
-		c.String(400, "Create Product Error: VUnCom not informed")
+		c.String(400, "Edit Product Error: VUnCom not informed")
 		return
-	}
+	}*/
 
 	err = service.GetInstanceProduct().EditProduct(context.Background(), product)
 	if err != nil {
@@ -166,12 +269,12 @@ func DeleteProduct(c *gin.Context) {
 		return
 	}
 
-	if product.BarCodeNumber == "" {
-		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
+	if product.CODIGO_CEST == "" {
+		c.String(http.StatusBadRequest, "Delete Product Error: CODIGO_CEST not informed")
 		return
 	}
 
-	err = service.GetInstanceProduct().DeleteProduct(context.Background(), product.BarCodeNumber)
+	err = service.GetInstanceProduct().DeleteProduct(context.Background(), product.CODIGO_CEST)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -180,7 +283,7 @@ func DeleteProduct(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
-func GetByBarCode(c *gin.Context) {
+func GetCodeCest(c *gin.Context) {
 
 	var product model.Product
 	err := json.NewDecoder(c.Request.Body).Decode(&product)
@@ -190,12 +293,12 @@ func GetByBarCode(c *gin.Context) {
 		return
 	}
 
-	if product.BarCodeNumber == "" {
-		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
+	if product.CODIGO_CEST == "" {
+		c.String(http.StatusBadRequest, "Get Product Error: CODIGO_CEST not informed")
 		return
 	}
 
-	result, err := service.GetInstanceProduct().GetProduct(context.Background(), product.BarCodeNumber)
+	result, err := service.GetInstanceProduct().GetProduct(context.Background(), product.CODIGO_CEST)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -216,19 +319,19 @@ func GetProductByName(c *gin.Context) {
 		return
 	}
 
-	if product.Name == "" {
-		c.String(http.StatusBadRequest, "Create Product Error: barCode not informed")
+	if product.NAME == "" {
+		c.String(http.StatusBadRequest, "Get Product Error: NAME not informed")
 		return
 	}
 
 
-	result, err := service.GetInstanceProduct().GetProductByName(context.Background(), product.Name)
+	result, err := service.GetInstanceProduct().GetProductByName(context.Background(), product.NAME)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 
-	log.Infof("[GetInformation] Object : %s \n", "ola", "")
+	log.Infof("[GetInformation] Object : %s \n", result, "")
 
 	c.JSON(http.StatusOK, result)
 }

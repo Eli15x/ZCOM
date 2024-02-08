@@ -32,7 +32,6 @@ no terminal rode o seguinte comando:
 
 Pegar usuarios somente com id 1, nao sao administradores para salvar com senha criptografada na pasta user.
 
-
 Criar Nova tabela para forma de pagamento:
 
 {
@@ -44,7 +43,6 @@ Criar rota atualizar quantias.
 {
     "idUser": "xxx-yyy-zzz",
     "codigoPagamento": ,
-    "qtdProdutos":,
     "valorTotal": "",
     "pagamentos":{
         {
@@ -68,6 +66,39 @@ Criar rota atualizar quantias.
 
     {
 
+    }
+
+}
+ROTA POST - PRODUCT CREATE:
+
+os comentados foram os retirados para a nova alteração.
+
+
+{
+    "CODIGO_CEST":"2323-222-444-555",
+    "NAME":"pasta de dente oral b",
+    "CODIGO_NCM": "1122",
+    "CFOP": "11",
+    "GTIN": "",
+    "IAT": "",
+    "ID_PRODUTO_GRUPO": "",
+    "ID_PRODUTO_MARCA": "",
+    "ID_PRODUTO_UNIDADE": "",
+    "ID_TRIBUT_GRUPO_TRIBUTARIO": "",
+    "IPPT": "",
+    "PESO": "",
+    "QUANTIDADE_EMBALAGEM": "",
+    "QUANTIDADE_ESTOQUE": "",
+    "desconto": 0.00 , //não obrigatorio
+    "outrosDescontos": 0.00, //não obrigatorio
+   // "indRegra": "33",
+  //  "uCom": 1,
+  //  "qCom":1,
+  //  "vUnCom": 8.00,
+    "imposto":
+    {
+        "imposto1": "teste",
+        "imposto2": "teste"
     }
 
 }

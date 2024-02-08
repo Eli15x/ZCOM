@@ -73,15 +73,23 @@ func main() {
 
 	router.POST("/product/create", handlers.CreateProduct)
 	router.GET("/product/getByName", handlers.GetProductByName)
-	router.GET("/product/getByBarCode", handlers.GetByBarCode)
+	router.GET("/product/getByCode", handlers.GetCodeCest)
 	router.GET("/product/getAll", handlers.GetProducts)
 	router.PUT("/product/edit", handlers.EditProduct)
 	router.DELETE("/product/delete", handlers.DeleteProduct)
-	router.GET("/product/save", handlers.SaveProduct) //rota para salvar produtos
-	
-	//router.POST("/sale/send", handlers.CreateBook)
-	//.POST("/sales/send", handlers.CreateBook)*/
+	router.GET("/product/save", handlers.SaveProduct) //rota para salvar produtos	
 
+	router.GET("/marca", handlers.GetMarca)
+	router.GET("/marcas", handlers.GetMarcas)
+
+	router.GET("/grupo", handlers.GetGrupo)
+	router.GET("/grupos", handlers.GetGrupos)
+
+	router.GET("/unidade", handlers.GetUnidade)
+	router.GET("/unidades", handlers.GetUnidades)
+
+	//router.GET("/sale/create", handlers.CreateSale)
+	//router.GET("/sales/data", handlers.GetSales)
 
 
 	router.Run(":1323")

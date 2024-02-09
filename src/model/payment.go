@@ -12,3 +12,8 @@ type Payment struct {
 	TypePayment  string   `json:"typePayment,omitempty" bson:"typePayment,omitempty"`
 }
 
+type SaleXML struct {
+	Path string   					   `json:"path,omitempty" bson:"path,omitempty"`
+	Name string 					   `json:"name,omitempty" bson:"name,omitempty"`
+	XmlContent  map[string]interface{} `json:"xmlContent,omitempty" bson:"xmlContent,omitempty"`
+}

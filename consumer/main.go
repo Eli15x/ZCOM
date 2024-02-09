@@ -15,7 +15,6 @@ import (
 
 func main() {
 
-
 	err := godotenv.Load("../.env")
     if err != nil {
         fmt.Errorf("Error loading .env file")
@@ -31,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"createUser", "editUser", "deleteUser", "createProduct","editProduct", "deleteProduct" ,"^aRegex.*[Tt]opic"}, nil)
+	c.SubscribeTopics([]string{"createUser", "editUser", "deleteUser", "createProduct","editProduct", "deleteProduct" ,"^aRegex.*[Tt]opic", "createSaleXML"}, nil)
 	run := true
 
 	for run {
@@ -85,6 +84,13 @@ func main() {
 					err := service.GetInstanceProduct().DeleteProduct(context.Background(), result)
 					if err != nil {
 						fmt.Println("Create Product: problem to insert into MongoDB")
+					}
+				case "createSaleXML":
+					var result model.SaleXML
+					json.Unmarshal([]byte(msg.Value), &result)
+					err := service.GetInstanceSale().SaveSaleXML(context.Background(), result)
+					if err != nil {
+						fmt.Println("Create saleXML: problem to put on file")
 					}
 				default:
 					// freebsd, openbsd,

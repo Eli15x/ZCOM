@@ -88,6 +88,7 @@ func main() {
 	router.GET("/unidade", handlers.GetUnidade)
 	router.GET("/unidades", handlers.GetUnidades)
 
+	router.POST("/saleXml", handlers.CreateSaleXml)
 	//router.GET("/sale/create", handlers.CreateSale)
 	//router.GET("/sales/data", handlers.GetSales)
 

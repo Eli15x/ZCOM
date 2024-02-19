@@ -84,7 +84,7 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 
 	if err := client.GetInstance().Ping(context.Background()); err == nil {
 		CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": id}
-		product, err = repository.GetInstanceProduct().FindOne(ctx, "product", CODIGO_CEST)
+		product, err = repository.GetInstanceProduct().FindOne(ctx, "produto", CODIGO_CEST)
 		if err != nil {
 			return product, errors.New("Get user: problem to Find Id into MongoDB")
 		}
@@ -124,7 +124,7 @@ func (p *product) GetProductByName(ctx context.Context, name string) (model.Prod
 	var product model.Product
 	Name := map[string]interface{}{"NAME": name}
 	if err := client.GetInstance().Initialize(context.Background()); err == nil {
-		product, err := repository.GetInstanceProduct().FindOne(ctx, "product", Name)
+		product, err := repository.GetInstanceProduct().FindOne(ctx, "produto", Name)
 		if err != nil {
 		
 			return product, errors.New("Get product by name: problem to Find name into MongoDB")
@@ -141,7 +141,7 @@ func (p *product) GetProducts(ctx context.Context)([]model.Product, error){
 	all := map[string]interface{}{}
 
 	if err := client.GetInstance().Initialize(context.Background()); err == nil {
-		products, err = repository.GetInstanceProduct().Find(ctx, "product", all)
+		products, err = repository.GetInstanceProduct().Find(ctx, "produto", all)
 		if err != nil {
 			return nil, errors.New("Get Products: problem to Find Id into MongoDB")
 		}
@@ -190,7 +190,7 @@ func (p *product) CreateProduct(ctx context.Context,product model.Product) error
 	//casos de duplicidade ajustar
 	productInsert := structs.Map(product)
 
-	_, err := client.GetInstance().Insert(ctx, "product", productInsert)
+	_, err := client.GetInstance().Insert(ctx, "produto", productInsert)
 	if err != nil {
 		return errors.New("Product: problem to insert into MongoDB")
 	}
@@ -204,7 +204,7 @@ func (p *product) EditProduct(ctx context.Context,product model.Product) error {
 	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
 	change := bson.M{"$set": productUpdate}
 
-	_, err := client.GetInstance().UpdateOne(ctx, "product", CODIGO_CEST, change)
+	_, err := client.GetInstance().UpdateOne(ctx, "produto", CODIGO_CEST, change)
 	if err != nil {
 		return errors.New("Edit product: problem to update into MongoDB")
 	}
@@ -215,7 +215,7 @@ func (p *product) DeleteProduct(ctx context.Context,product model.Product) error
 	//casos de duplicidade ajustar
 	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
 
-	err := client.GetInstance().Remove(ctx, "product", CODIGO_CEST)
+	err := client.GetInstance().Remove(ctx, "produto", CODIGO_CEST)
 	if err != nil {
 		return errors.New("Delete Product: problem to delete into MongoDB")
 	}

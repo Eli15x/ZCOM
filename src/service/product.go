@@ -1,39 +1,41 @@
 package service
 
 import (
-	"os"
-	"encoding/json"
 	kafka "ZCOM/src/client/kafka"
+	"encoding/json"
+	"os"
+
 	//"go.mongodb.org/mongo-driver/bson"
 	"context"
 	"errors"
 	"sync"
 
+	"ZCOM/src/client"
+	"ZCOM/src/model"
+	"ZCOM/src/repository"
+
 	"github.com/fatih/structs"
 	"go.mongodb.org/mongo-driver/bson"
-	"ZCOM/src/model"
-	"ZCOM/src/client"
-	"ZCOM/src/repository"
 	//"github.com/fatih/structs"
 )
 
 var (
 	instanceServiceProduct ServiceProduct
-	onceServiceProduct    sync.Once
+	onceServiceProduct     sync.Once
 )
 
 type ServiceProduct interface {
 	CreateProductKafka(ctx context.Context, product model.Product) error
 	EditProductKafka(ctx context.Context, product model.Product) error
 	GetProduct(ctx context.Context, id string) (model.Product, error)
-	GetProductByName(ctx context.Context, name string) (model.Product,error)
+	GetProductByName(ctx context.Context, name string) (model.Product, error)
 	GetProducts(ctx context.Context) ([]model.Product, error)
 	DeleteProductKafka(ctx context.Context, id string) error
 	SaveProduct(ctx context.Context) error
 
 	CreateProduct(ctx context.Context, product model.Product) error
 	EditProduct(ctx context.Context, product model.Product) error
-	DeleteProduct(ctx context.Context,product model.Product) error
+	DeleteProduct(ctx context.Context, product model.Product) error
 }
 
 type product struct{}
@@ -47,8 +49,8 @@ func GetInstanceProduct() ServiceProduct {
 
 func (p *product) CreateProductKafka(ctx context.Context, product model.Product) error {
 
-	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
-	if productExist.CODIGO_CEST != "" {
+	productExist, _ := p.GetProduct(ctx, product.GTIN)
+	if productExist.GTIN != "" {
 		return errors.New("Product: this barcode exists")
 	}
 
@@ -62,14 +64,14 @@ func (p *product) CreateProductKafka(ctx context.Context, product model.Product)
 	return nil
 }
 
-func (p *product) EditProductKafka(ctx context.Context, product model.Product) error{
+func (p *product) EditProductKafka(ctx context.Context, product model.Product) error {
 
-	productExist, _ := p.GetProduct(ctx, product.CODIGO_CEST)
-	if productExist.CODIGO_CEST == "" {
+	productExist, _ := p.GetProduct(ctx, product.GTIN)
+	if productExist.GTIN == "" {
 		return errors.New("Edit Product: doesn't have any match for this CODIGO CEST")
 	}
 
-	productJson, err := json.Marshal(product) 
+	productJson, err := json.Marshal(product)
 
 	err = kafka.GetInstanceKafka().SendMessage(productJson, "editProduct")
 	if err != nil {
@@ -83,14 +85,14 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 	var product model.Product
 
 	if err := client.GetInstance().Ping(context.Background()); err == nil {
-		CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": id}
-		product, err = repository.GetInstanceProduct().FindOne(ctx, "produto", CODIGO_CEST)
+		GTIN := map[string]interface{}{"GTIN": id}
+		product, err = repository.GetInstanceProduct().FindOne(ctx, "product", GTIN)
 		if err != nil {
 			return product, errors.New("Get user: problem to Find Id into MongoDB")
 		}
-	} else{
+	} else {
 
-		namefile := id + ".txt" 
+		namefile := id + ".txt"
 		data, err := os.ReadFile(os.Getenv("SaveProduct") + namefile)
 		if err != nil {
 			return product, err
@@ -98,12 +100,11 @@ func (p *product) GetProduct(ctx context.Context, id string) (model.Product, err
 		json.Unmarshal([]byte(data), &product)
 
 	}
-	
 
 	return product, nil
 }
 
-func (p *product) DeleteProductKafka(ctx context.Context, id string) error{
+func (p *product) DeleteProductKafka(ctx context.Context, id string) error {
 
 	productExist, _ := p.GetProduct(ctx, id)
 	if productExist.CODIGO_CEST == "" {
@@ -120,13 +121,13 @@ func (p *product) DeleteProductKafka(ctx context.Context, id string) error{
 	return nil
 }
 
-func (p *product) GetProductByName(ctx context.Context, name string) (model.Product,error){
+func (p *product) GetProductByName(ctx context.Context, name string) (model.Product, error) {
 	var product model.Product
 	Name := map[string]interface{}{"NAME": name}
 	if err := client.GetInstance().Initialize(context.Background()); err == nil {
 		product, err := repository.GetInstanceProduct().FindOne(ctx, "produto", Name)
 		if err != nil {
-		
+
 			return product, errors.New("Get product by name: problem to Find name into MongoDB")
 		}
 	}
@@ -134,8 +135,7 @@ func (p *product) GetProductByName(ctx context.Context, name string) (model.Prod
 	return product, nil
 }
 
-
-func (p *product) GetProducts(ctx context.Context)([]model.Product, error){
+func (p *product) GetProducts(ctx context.Context) ([]model.Product, error) {
 
 	products := []model.Product{}
 	all := map[string]interface{}{}
@@ -145,13 +145,13 @@ func (p *product) GetProducts(ctx context.Context)([]model.Product, error){
 		if err != nil {
 			return nil, errors.New("Get Products: problem to Find Id into MongoDB")
 		}
-		
+
 	}
 
 	return products, nil
 }
 
-func (p *product) SaveProduct(ctx context.Context) error{
+func (p *product) SaveProduct(ctx context.Context) error {
 
 	products, err := p.GetProducts(ctx)
 	if err != nil {
@@ -160,13 +160,13 @@ func (p *product) SaveProduct(ctx context.Context) error{
 
 	//remove all files for not be duplicated or for not exists more files that are not related to what have on mongo
 	err = os.RemoveAll(os.Getenv("SaveProduct"))
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	err = os.Mkdir(os.Getenv("SaveProduct"), 0755) //create a directory and give it required permissions
 	if err != nil {
-	   return err
+		return err
 	}
 
 	for _, product := range products {
@@ -176,9 +176,9 @@ func (p *product) SaveProduct(ctx context.Context) error{
 			return err
 		}
 
-		namefile := barCodeNumber + ".txt" 
-	
-		if err = os.WriteFile(os.Getenv("SaveProduct") + namefile , productJson, 0666); err != nil {
+		namefile := barCodeNumber + ".txt"
+
+		if err = os.WriteFile(os.Getenv("SaveProduct")+namefile, productJson, 0666); err != nil {
 			return err
 		}
 	}
@@ -186,7 +186,7 @@ func (p *product) SaveProduct(ctx context.Context) error{
 	return nil
 }
 
-func (p *product) CreateProduct(ctx context.Context,product model.Product) error {
+func (p *product) CreateProduct(ctx context.Context, product model.Product) error {
 	//casos de duplicidade ajustar
 	productInsert := structs.Map(product)
 
@@ -198,24 +198,24 @@ func (p *product) CreateProduct(ctx context.Context,product model.Product) error
 	return nil
 }
 
-func (p *product) EditProduct(ctx context.Context,product model.Product) error {
+func (p *product) EditProduct(ctx context.Context, product model.Product) error {
 	//casos de duplicidade ajustar
-	productUpdate:= structs.Map(product)
-	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
+	productUpdate := structs.Map(product)
+	GTIN := map[string]interface{}{"GTIN": product.GTIN}
 	change := bson.M{"$set": productUpdate}
 
-	_, err := client.GetInstance().UpdateOne(ctx, "produto", CODIGO_CEST, change)
+	_, err := client.GetInstance().UpdateOne(ctx, "produto", GTIN, change)
 	if err != nil {
 		return errors.New("Edit product: problem to update into MongoDB")
 	}
 	return nil
 }
 
-func (p *product) DeleteProduct(ctx context.Context,product model.Product) error {
+func (p *product) DeleteProduct(ctx context.Context, product model.Product) error {
 	//casos de duplicidade ajustar
-	CODIGO_CEST := map[string]interface{}{"CODIGO_CEST": product.CODIGO_CEST}
+	GTIN := map[string]interface{}{"GTIN": product.GTIN}
 
-	err := client.GetInstance().Remove(ctx, "produto", CODIGO_CEST)
+	err := client.GetInstance().Remove(ctx, "produto", GTIN)
 	if err != nil {
 		return errors.New("Delete Product: problem to delete into MongoDB")
 	}

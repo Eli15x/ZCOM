@@ -9,12 +9,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/joho/godotenv"
 	"ZCOM/src/client"
-	"ZCOM/src/handler"
+	handlers "ZCOM/src/handler"
+
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -29,9 +30,9 @@ func main() {
 	})
 
 	err := godotenv.Load(".env")
-    if err != nil {
-        fmt.Errorf("Error loading .env file")
-    }
+	if err != nil {
+		fmt.Errorf("Error loading .env file")
+	}
 
 	//Context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -42,7 +43,6 @@ func main() {
 		fmt.Errorf("mongo off")
 		bugsnag.Notify(fmt.Errorf("[MONGO DB - ZCOM] Could not resolve Data access layer. Error:"))
 	}
-
 
 	if err := kafka.GetInstanceKafka().Initialize(); err != nil {
 		fmt.Println(err)
@@ -68,16 +68,15 @@ func main() {
 	router.GET("/user/getByName", handlers.GetUserByName)
 	router.GET("/user/getByAcess", handlers.GetUsersByAcess)
 	router.GET("/users", handlers.GetUsers)
-	router.GET("/user/save", handlers.SaveUser) 
-
+	router.GET("/user/save", handlers.SaveUser)
 
 	router.POST("/product/create", handlers.CreateProduct)
 	router.GET("/product/getByName", handlers.GetProductByName)
-	router.GET("/product/getByCode", handlers.GetCodeCest)
+	router.GET("/product/getByGTIN", handlers.GetProduct)
 	router.GET("/product/getAll", handlers.GetProducts)
 	router.PUT("/product/edit", handlers.EditProduct)
 	router.DELETE("/product/delete", handlers.DeleteProduct)
-	router.GET("/product/save", handlers.SaveProduct) //rota para salvar produtos	
+	router.GET("/product/save", handlers.SaveProduct) //rota para salvar produtos
 
 	router.GET("/marca", handlers.GetMarca)
 	router.GET("/marcas", handlers.GetMarcas)
@@ -91,7 +90,6 @@ func main() {
 	router.POST("/saleXml", handlers.CreateSaleXml)
 	//router.GET("/sale/create", handlers.CreateSale)
 	//router.GET("/sales/data", handlers.GetSales)
-
 
 	router.Run(":1323")
 }

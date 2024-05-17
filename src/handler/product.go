@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"net/http"
-	"ZCOM/src/service"
 	"ZCOM/src/model"
+	"ZCOM/src/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 )
@@ -26,7 +27,7 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	if product.NAME == "" {
+	if product.NOME == "" {
 		c.String(400, "Create Product Error: Name not informed")
 		return
 	}
@@ -91,7 +92,6 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-
 	/*if product.Desconto == 0 {
 		c.String(400, "Create Product Error: Desconto not informed")
 		return
@@ -102,7 +102,6 @@ func CreateProduct(c *gin.Context) {
 		c.String(400, "Create Product Error: OutrosDesconto not informed")
 		return
 	}*/
-
 
 	/*if product.IndRegra == "" {
 		c.String(400, "Create Product Error: IndRegra not informed")
@@ -125,14 +124,13 @@ func CreateProduct(c *gin.Context) {
 		return
 	}*/
 
-
 	err = service.GetInstanceProduct().CreateProductKafka(context.Background(), product)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 
-	c.String(http.StatusOK, "" )
+	c.String(http.StatusOK, "")
 }
 
 func EditProduct(c *gin.Context) {
@@ -145,13 +143,12 @@ func EditProduct(c *gin.Context) {
 		return
 	}
 
-	
 	if product.CODIGO_CEST == "" {
 		c.String(http.StatusBadRequest, "Edit Product Error: barCode not informed")
 		return
 	}
 
-	if product.NAME == "" {
+	if product.NOME == "" {
 		c.String(400, "Edit Product Error: Name not informed")
 		return
 	}
@@ -216,7 +213,6 @@ func EditProduct(c *gin.Context) {
 		return
 	}
 
-
 	/*if product.Desconto == 0 {
 		c.String(400, "Edit Product Error: Desconto not informed")
 		return
@@ -227,7 +223,6 @@ func EditProduct(c *gin.Context) {
 		c.String(400, "Edit Product Error: OutrosDesconto not informed")
 		return
 	}*/
-
 
 	/*if product.IndRegra == "" {
 		c.String(400, "Edit Product Error: IndRegra not informed")
@@ -283,7 +278,7 @@ func DeleteProduct(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }
 
-func GetCodeCest(c *gin.Context) {
+func GetProduct(c *gin.Context) {
 
 	var product model.Product
 	err := json.NewDecoder(c.Request.Body).Decode(&product)
@@ -293,12 +288,12 @@ func GetCodeCest(c *gin.Context) {
 		return
 	}
 
-	if product.CODIGO_CEST == "" {
-		c.String(http.StatusBadRequest, "Get Product Error: CODIGO_CEST not informed")
+	if product.GTIN == "" {
+		c.String(http.StatusBadRequest, "Get Product Error: GTIN not informed")
 		return
 	}
 
-	result, err := service.GetInstanceProduct().GetProduct(context.Background(), product.CODIGO_CEST)
+	result, err := service.GetInstanceProduct().GetProduct(context.Background(), product.GTIN)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -319,13 +314,12 @@ func GetProductByName(c *gin.Context) {
 		return
 	}
 
-	if product.NAME == "" {
+	if product.NOME == "" {
 		c.String(http.StatusBadRequest, "Get Product Error: NAME not informed")
 		return
 	}
 
-
-	result, err := service.GetInstanceProduct().GetProductByName(context.Background(), product.NAME)
+	result, err := service.GetInstanceProduct().GetProductByName(context.Background(), product.NOME)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -344,11 +338,10 @@ func GetProducts(c *gin.Context) {
 		return
 	}
 
-
 	c.JSON(http.StatusOK, result) //return list
 }
 
-func SaveProduct(c *gin.Context){
+func SaveProduct(c *gin.Context) {
 
 	err := service.GetInstanceProduct().SaveProduct(context.Background())
 	if err != nil {

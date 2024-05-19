@@ -18,6 +18,8 @@ type Product struct {
 	Desconto                   float64 `json:"desconto,omitempty" bson:"Desconto"`
 	OutrosDesconto             float64 `json:"outrosDesconto,omitempty" bson:"OutrosDesconto"`
 	IndRegra                   string  `json:"indRegra,omitempty" bson:"IndRegra"`
+	VALOR_COMPRA               float64 `json:"VALOR_COMPRA,omitempty" bson:"VALOR_COMPRA"`
+	VALOR_VENDA                float64 `json:"VALOR_VENDA,omitempty" bson:"VALOR_VENDA"`
 	//UCom     	   	float64       	 `json:"uCom,omitempty" bson:"UCom"`
 	//QCom     	   	float64       `json:"qCom,omitempty" bson:"QCom"`
 	//VUnCom     	   	float64       `json:"vUnCom,omitempty" bson:"VUnCom"`

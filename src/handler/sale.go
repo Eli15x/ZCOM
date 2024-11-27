@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"net/http"
-	"ZCOM/src/service"
 	"ZCOM/src/model"
+	"ZCOM/src/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,12 +21,12 @@ func CreateSaleXml(c *gin.Context) {
 		return
 	}
 
-	if saleXML.Path == ""{
+	if saleXML.Path == "" {
 		c.String(400, "Create SaleXml Error: Path not informed")
 		return
 	}
 
-	if saleXML.Name == ""{
+	if saleXML.Name == "" {
 		c.String(400, "Create SaleXml Error: Name not informed")
 		return
 	}
@@ -36,6 +37,16 @@ func CreateSaleXml(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "" )
+	c.String(http.StatusOK, "")
 }
 
+func SendSale(c *gin.Context) {
+
+	err := service.GetInstanceSale().SendSaleZipToHostgator(context.Background())
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "")
+}

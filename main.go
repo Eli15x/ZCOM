@@ -60,7 +60,6 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.POST("/login", handlers.ValidateUser)
-	//router.POST("/loginViaCode", handlers.ValidateUserViaCode)
 	router.POST("/cadastro", handlers.CreateUser)
 	router.PUT("/user/edit", handlers.EditUser)
 	router.DELETE("/user/delete", handlers.DeleteUser)
@@ -88,8 +87,8 @@ func main() {
 	router.GET("/unidades", handlers.GetUnidades)
 
 	router.POST("/saleXml", handlers.CreateSaleXml)
-	//router.GET("/sale/create", handlers.CreateSale)
-	//router.GET("/sales/data", handlers.GetSales)
+	router.POST("/saleSend", handlers.SendSale) //mandar os dados da venda aqui
+	//router.POST("/getUpdates", handlers.GetUpdated) //pegar dados produto aqui que deu updated.
 
 	router.Run(":1323")
 }

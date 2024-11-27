@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"net/http"
-	"ZCOM/src/service"
 	"ZCOM/src/model"
+	"ZCOM/src/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 )
@@ -26,7 +27,6 @@ func GetGrupo(c *gin.Context) {
 		return
 	}
 
-
 	result, err := service.GetInstanceGrupo().GetGrupo(context.Background(), grupo.Grupo)
 	if err != nil {
 		c.String(400, err.Error())
@@ -45,7 +45,6 @@ func GetGrupos(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-
 
 	c.JSON(http.StatusOK, result) //return list
 }
